@@ -5,8 +5,6 @@ import MomPage from "./pages/MomPage";
 import WowPage from "./pages/WowPage";
 import { DEMO_MOM_STORE, DEMO_WOW_STORE } from "./data";
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxrnSRG9bewdk-BRaGZWIJwTyZjiiyLAUiJkSPdZSpQKQj7bX1Zh2LnPDasou558vfx7Q/exec";
-
 export default function App() {
   const [user, setUser] = useState(null);
   const [page, setPage] = useState("mom");
@@ -40,22 +38,23 @@ export default function App() {
     return out;
   }
 
- async function fetchFromSheets() {
-  try {
-    const res = await fetch("/api/sheets");
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    if (data.momStore)    setMomStore(data.momStore.map(normalizeRow));
-    if (data.momMarket)   setMomMarket(data.momMarket.map(normalizeRow));
-    if (data.momDistrict) setMomDistrict(data.momDistrict.map(normalizeRow));
-    if (data.wowStore)    setWowStore(data.wowStore.map(normalizeRow));
-    if (data.wowMarket)   setWowMarket(data.wowMarket.map(normalizeRow));
-    if (data.wowDistrict) setWowDistrict(data.wowDistrict.map(normalizeRow));
-  } catch (err) {
-    console.error("Google Sheets fetch failed:", err);
+  async function fetchFromSheets() {
+    try {
+      const res = await fetch("/api/sheets");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (data.momStore)    setMomStore(data.momStore.map(normalizeRow));
+      if (data.momMarket)   setMomMarket(data.momMarket.map(normalizeRow));
+      if (data.momDistrict) setMomDistrict(data.momDistrict.map(normalizeRow));
+      if (data.wowStore)    setWowStore(data.wowStore.map(normalizeRow));
+      if (data.wowMarket)   setWowMarket(data.wowMarket.map(normalizeRow));
+      if (data.wowDistrict) setWowDistrict(data.wowDistrict.map(normalizeRow));
+    } catch (err) {
+      console.error("Google Sheets fetch failed:", err);
+    }
   }
-}
-}  if (!user) return <Login onLogin={setUser}/>;
+
+  if (!user) return <Login onLogin={setUser}/>;
 
   return (
     <Shell
