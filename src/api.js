@@ -1,2 +1,2 @@
 export const API_URL =
-  "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+  "https://script.google.com/macros/s/AKfycbxrnSRG9bewdk-BRaGZWIJwTyZjiiyLAUiJkSPdZSpQKQj7bX1Zh2LnPDasou558vfx7Q/exec";
