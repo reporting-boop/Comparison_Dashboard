@@ -138,24 +138,7 @@ export default function Shell({
           })}
         </nav>
 
-  /* {/* Upload */}
-        {user.role === "admin" && (
-          <div style={{ padding:"10px 12px", borderTop:"1px solid rgba(255,255,255,.08)" }}>
-            <input ref={fileRef} type="file" accept=".xlsx,.xls" onChange={handleFile} style={{ display:"none" }}/>
-            <button onClick={() => fileRef.current.click()} disabled={uploading} style={{
-              width:"100%", padding:"8px 12px", borderRadius:7,
-              background:"rgba(230,0,126,.15)", border:"1px solid rgba(230,0,126,.3)",
-              color:"#ff6ec7", fontSize:11, fontWeight:600, cursor:"pointer",
-              display:"flex", alignItems:"center", justifyContent:"center", gap:6
-            }}>
-              <Upload size={12}/> {uploading ? "Loading…" : "Upload MOM / WOW"}
-            </button>
-            <div style={{ color:"rgba(255,255,255,.18)", fontSize:9, textAlign:"center", marginTop:5 }}>
-              Auto-detects MOM or WOW file
-            </div>
-          </div>
-        )}  */
-
+  
         {/* User */}
         <div style={{ padding:"12px 14px", borderTop:"1px solid rgba(255,255,255,.08)",
           display:"flex", alignItems:"center", gap:10 }}>
