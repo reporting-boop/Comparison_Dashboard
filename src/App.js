@@ -27,7 +27,7 @@ export default function App() {
   useEffect(() => {
     if (!user) return;
     fetchFromSheets();
-  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+}, [user]);
 
   function normalizeRow(row) {
     const numFields = [
