@@ -4,10 +4,20 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbxrnSRG9bewdk-BRaGZWIJw
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   try {
-    const response = await fetch(GAS_URL, { redirect: "follow" });
-    const data = await response.json();
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 25000);
+
+    const response = await fetch(GAS_URL, {
+      redirect: "follow",
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+
+    const text = await response.text();
+    const data = JSON.parse(text);
     res.status(200).json(data);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message, type: err.name });
   }
 }
