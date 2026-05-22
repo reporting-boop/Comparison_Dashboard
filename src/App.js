@@ -40,13 +40,11 @@ export default function App() {
     return out;
   }
 
- async function fetchFromSheets() {
+ aasync function fetchFromSheets() {
   try {
-    const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(GAS_URL);
-    const res = await fetch(proxyUrl);
+    const res = await fetch("/api/sheets");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const wrapper = await res.json();
-    const data = JSON.parse(wrapper.contents);
+    const data = await res.json();
     if (data.momStore)    setMomStore(data.momStore.map(normalizeRow));
     if (data.momMarket)   setMomMarket(data.momMarket.map(normalizeRow));
     if (data.momDistrict) setMomDistrict(data.momDistrict.map(normalizeRow));
@@ -56,8 +54,7 @@ export default function App() {
   } catch (err) {
     console.error("Google Sheets fetch failed:", err);
   }
-}
-  if (!user) return <Login onLogin={setUser}/>;
+}  if (!user) return <Login onLogin={setUser}/>;
 
   return (
     <Shell
