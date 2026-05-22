@@ -40,7 +40,7 @@ export default function App() {
     return out;
   }
 
- aasync function fetchFromSheets() {
+ async function fetchFromSheets() {
   try {
     const res = await fetch("/api/sheets");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -54,6 +54,7 @@ export default function App() {
   } catch (err) {
     console.error("Google Sheets fetch failed:", err);
   }
+}
 }  if (!user) return <Login onLogin={setUser}/>;
 
   return (
