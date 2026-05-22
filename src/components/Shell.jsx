@@ -138,7 +138,7 @@ export default function Shell({
           })}
         </nav>
 
-        {/* Upload */}
+  /* {/* Upload */}
         {user.role === "admin" && (
           <div style={{ padding:"10px 12px", borderTop:"1px solid rgba(255,255,255,.08)" }}>
             <input ref={fileRef} type="file" accept=".xlsx,.xls" onChange={handleFile} style={{ display:"none" }}/>
@@ -154,7 +154,7 @@ export default function Shell({
               Auto-detects MOM or WOW file
             </div>
           </div>
-        )}
+        )}  */
 
         {/* User */}
         <div style={{ padding:"12px 14px", borderTop:"1px solid rgba(255,255,255,.08)",
