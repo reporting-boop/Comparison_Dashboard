@@ -155,6 +155,7 @@ function momDistrictCols() {
     { key:"dm", label:"DM", muted:true },
     { key:"ppd", label:"PPD", render:r => <TrendCell curr={r.ppd_curr} prev={r.ppd_prev} pct={r.ppd_pct}/> },
     { key:"acc", label:"Acc", render:r => <TrendCell curr={r.acc_curr} prev={r.acc_prev} pct={r.acc_pct} format={fmtDollar}/> },
+    { key:"apo", label:"APO", render:r => <TrendCell curr={r.apo_curr} prev={r.apo_prev} pct={r.apo_pct} format={v=>fmtNum(v,1)}/> },
     { key:"voice", label:"Voice", render:r => <TrendCell curr={r.voice_curr} prev={r.voice_prev} pct={r.voice_pct}/> },
     { key:"bts", label:"BTS", render:r => <TrendCell curr={r.bts_curr} prev={r.bts_prev} pct={r.bts_pct}/> },
     { key:"hint", label:"Hint", render:r => <TrendCell curr={r.hint_curr} prev={r.hint_prev} pct={r.hint_pct}/> },
