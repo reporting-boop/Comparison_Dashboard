@@ -40,23 +40,22 @@ export default function App() {
     return out;
   }
 
-  async function fetchFromSheets() {
-    try {
-      const res = await fetch(GAS_URL + "?t=" + Date.now(), {
-        redirect: "follow",
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      if (data.momStore)    setMomStore(data.momStore.map(normalizeRow));
-      if (data.momMarket)   setMomMarket(data.momMarket.map(normalizeRow));
-      if (data.momDistrict) setMomDistrict(data.momDistrict.map(normalizeRow));
-      if (data.wowStore)    setWowStore(data.wowStore.map(normalizeRow));
-      if (data.wowMarket)   setWowMarket(data.wowMarket.map(normalizeRow));
-      if (data.wowDistrict) setWowDistrict(data.wowDistrict.map(normalizeRow));
-    } catch (err) {
-      console.error("Google Sheets fetch failed:", err);
-    }
+ async function fetchFromSheets() {
+  try {
+    const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(GAS_URL + "?t=" + Date.now());
+    const res = await fetch(proxyUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data.momStore)    setMomStore(data.momStore.map(normalizeRow));
+    if (data.momMarket)   setMomMarket(data.momMarket.map(normalizeRow));
+    if (data.momDistrict) setMomDistrict(data.momDistrict.map(normalizeRow));
+    if (data.wowStore)    setWowStore(data.wowStore.map(normalizeRow));
+    if (data.wowMarket)   setWowMarket(data.wowMarket.map(normalizeRow));
+    if (data.wowDistrict) setWowDistrict(data.wowDistrict.map(normalizeRow));
+  } catch (err) {
+    console.error("Google Sheets fetch failed:", err);
   }
+}
 
   if (!user) return <Login onLogin={setUser}/>;
 
