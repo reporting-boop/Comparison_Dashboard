@@ -5,29 +5,24 @@ import MomPage from "./pages/MomPage";
 import WowPage from "./pages/WowPage";
 import { DEMO_MOM_STORE, DEMO_WOW_STORE } from "./data";
 
-// ── PASTE YOUR DEPLOYED APPS SCRIPT URL HERE ────────────────
 const GAS_URL = "https://script.google.com/macros/s/AKfycbxrnSRG9bewdk-BRaGZWIJwTyZjiiyLAUiJkSPdZSpQKQj7bX1Zh2LnPDasou558vfx7Q/exec";
-// ─────────────────────────────────────────────────────────────
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [page, setPage] = useState("mom");
 
-  // MOM datasets
   const [momStore,    setMomStore]    = useState(DEMO_MOM_STORE);
   const [momMarket,   setMomMarket]   = useState([]);
   const [momDistrict, setMomDistrict] = useState([]);
 
-  // WOW datasets
   const [wowStore,    setWowStore]    = useState(DEMO_WOW_STORE);
   const [wowMarket,   setWowMarket]   = useState([]);
   const [wowDistrict, setWowDistrict] = useState([]);
 
-  // Auto-fetch from Google Sheets right after login
   useEffect(() => {
     if (!user) return;
     fetchFromSheets();
-}, [user]);
+  }, [user]);
 
   function normalizeRow(row) {
     const numFields = [
@@ -47,10 +42,11 @@ export default function App() {
 
   async function fetchFromSheets() {
     try {
-      const res = await fetch(GAS_URL);
+      const res = await fetch(GAS_URL + "?t=" + Date.now(), {
+        redirect: "follow",
+      });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-
       if (data.momStore)    setMomStore(data.momStore.map(normalizeRow));
       if (data.momMarket)   setMomMarket(data.momMarket.map(normalizeRow));
       if (data.momDistrict) setMomDistrict(data.momDistrict.map(normalizeRow));
