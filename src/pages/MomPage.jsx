@@ -356,7 +356,7 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
               <Bar dataKey="curr" name="Current" radius={[3,3,0,0]}>
                 {chartData.map((_,i) => <Cell key={i} fill={COLORS[i%COLORS.length]}/>)}
               </Bar>
-              <Bar dataKey="prev" name="Previous" fill="#52796f" radius={[3,3,0,0]}/>
+              <Bar dataKey="prev" name="Previous" fill="#c8b6ff" radius={[3,3,0,0]}/>
             </BarChart>
           </ResponsiveContainer>
         </div>
