@@ -3,30 +3,42 @@ import { pctColor, pctLabel, fmtNum } from "../data";
 const PURPLE = "#5b2d8e";
 const PINK   = "#e6007e";
 
-export function StatCard({ label, value, sub, accent }) {
-  const colors = {
-    purple: { bg:"#f3e8ff", text:PURPLE,    sub:"#a855f7" },
-    pink:   { bg:"#fce7f3", text:PINK,      sub:"#f472b6" },
-    green:  { bg:"#dcfce7", text:"#15803d", sub:"#4ade80" },
-    blue:   { bg:"#dbeafe", text:"#1d4ed8", sub:"#60a5fa" },
-    amber:  { bg:"#fef3c7", text:"#b45309", sub:"#fbbf24" },
-    red:    { bg:"#fee2e2", text:"#dc2626", sub:"#fca5a5" },
+export function StatCard({ label, curr, prev, trend, format, accent }) {
+  const accentColors = {
+    purple:"#5b2d8e", pink:"#e6007e", blue:"#2563eb",
+    green:"#16a34a", red:"#dc2626", amber:"#d97706",
   };
-  const c = colors[accent] || colors.purple;
+  const color = accentColors[accent] || "#5b2d8e";
+  const isPos = trend >= 0;
+  const trendColor = isPos ? "#16a34a" : "#dc2626";
+  const trendLabel = trend == null ? null :
+    `${isPos ? "+" : ""}${(trend * 100).toFixed(1)}%`;
+
   return (
     <div style={{
-      background:"#fff", borderRadius:14, padding:"16px 18px",
-      border:"1px solid #e9eaf0", flex:1, minWidth:140,
-      borderTop:`3px solid ${c.text}`
+      background:"#fff", borderRadius:14, border:"1px solid #e9eaf0",
+      padding:"16px 20px", flex:"1", minWidth:160,
+      borderTop:`3px solid ${color}`,
     }}>
-      <div style={{ fontSize:10, fontWeight:700, color:"#9ca3af", letterSpacing:".06em",
-        textTransform:"uppercase", marginBottom:8 }}>{label}</div>
-      <div style={{ fontSize:22, fontWeight:700, color:c.text, letterSpacing:"-.5px" }}>{value}</div>
-      {sub && <div style={{ fontSize:11, color:"#6b7280", marginTop:3 }}>{sub}</div>}
+      <div style={{ fontSize:11, fontWeight:700, color:"#9ca3af", letterSpacing:.8, textTransform:"uppercase", marginBottom:8 }}>
+        {label}
+      </div>
+      <div style={{ fontSize:26, fontWeight:800, color, lineHeight:1, marginBottom:4 }}>
+        {format ? format(curr) : curr}
+      </div>
+      {prev != null && (
+        <div style={{ fontSize:12, color:"#9ca3af", marginBottom:4 }}>
+          prev: {format ? format(prev) : prev}
+        </div>
+      )}
+      {trendLabel && (
+        <div style={{ fontSize:12, fontWeight:700, color:trendColor }}>
+          Trend: {trendLabel}
+        </div>
+      )}
     </div>
   );
 }
-
 export function PageHeader({ title, sub, extra }) {
   return (
     <div style={{
