@@ -4,7 +4,7 @@ import {
   ResponsiveContainer, Cell, Legend
 } from "recharts";
 import { pctLabel, fmtNum, fmtDollar, fmtRetention } from "../data";
-import { StatCard, PageHeader, PctBadge, TrendCell, RetentionBar, DataTable } from "../components/UI";
+import { StatCard, PageHeader, PctBadge, TrendCell, RetentionBar } from "../components/UI";
 
 const PURPLE = "#5b2d8e";
 const PINK   = "#e6007e";
@@ -69,25 +69,104 @@ function MultiSelect({ options, selected, onChange, placeholder }) {
   );
 }
 
+// ── Sortable DataTable ────────────────────────────────────────
+function SortableTable({ cols, rows, emptyMsg }) {
+  const [sortKey, setSortKey] = useState(null);
+  const [sortDir, setSortDir] = useState(null); // "desc" | "asc" | null
+
+  function handleSort(key) {
+    if (sortKey !== key) {
+      setSortKey(key);
+      setSortDir("desc");
+    } else if (sortDir === "desc") {
+      setSortDir("asc");
+    } else {
+      setSortKey(null);
+      setSortDir(null);
+    }
+  }
+
+  const sorted = useMemo(() => {
+    if (!sortKey || !sortDir) return rows;
+    return [...rows].sort((a, b) => {
+      let av = a[sortKey] ?? 0;
+      let bv = b[sortKey] ?? 0;
+      if (typeof av === "string") av = av.toLowerCase();
+      if (typeof bv === "string") bv = bv.toLowerCase();
+      if (av < bv) return sortDir === "desc" ? 1 : -1;
+      if (av > bv) return sortDir === "desc" ? -1 : 1;
+      return 0;
+    });
+  }, [rows, sortKey, sortDir]);
+
+  function arrow(key) {
+    if (sortKey !== key) return <span style={{color:"#d1d5db",marginLeft:3}}>⇅</span>;
+    return <span style={{color:PURPLE,marginLeft:3}}>{sortDir==="desc"?"↓":"↑"}</span>;
+  }
+
+  if (!rows.length) return (
+    <div style={{padding:"40px",textAlign:"center",color:"#9ca3af",fontSize:13}}>{emptyMsg}</div>
+  );
+
+  return (
+    <div style={{overflowX:"auto"}}>
+      <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+        <thead>
+          <tr style={{borderBottom:"2px solid #f3f4f6",background:"#fafafa"}}>
+            {cols.map(c => (
+              <th
+                key={c.key}
+                onClick={() => handleSort(c.sortKey || c.key)}
+                style={{
+                  padding:"10px 12px", textAlign:"left", fontWeight:700,
+                  color:PURPLE, fontSize:11, letterSpacing:.5,
+                  textTransform:"uppercase", cursor:"pointer",
+                  userSelect:"none", whiteSpace:"nowrap",
+                }}
+              >
+                {c.label}{arrow(c.sortKey || c.key)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map((row, i) => (
+            <tr key={i} style={{borderBottom:"1px solid #f9fafb", background: i%2===0?"#fff":"#fdfcff"}}>
+              {cols.map(c => (
+                <td key={c.key} style={{
+                  padding:"10px 12px",
+                  color: c.muted ? "#9ca3af" : c.bold ? "#111827" : "#374151",
+                  fontWeight: c.bold ? 600 : 400,
+                  whiteSpace:"nowrap",
+                }}>
+                  {c.render ? c.render(row) : row[c.key] ?? "—"}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function momStoreCols() {
   return [
-    { key:"doorCode", label:"Door", muted:true },
-    { key:"market", label:"Market", muted:true },
-    { key:"storeName", label:"Store", bold:true },
-    { key:"dm", label:"DM", muted:true },
-    { key:"ppd", label:"PPD", render:r => <TrendCell curr={r.ppd_curr} prev={r.ppd_prev} pct={r.ppd_pct}/> },
-    { key:"acc", label:"Accessories", render:r => <TrendCell curr={r.acc_curr} prev={r.acc_prev} pct={r.acc_pct} format={fmtDollar}/> },
-    { key:"apo", label:"APO", render:r => <TrendCell curr={r.apo_curr} prev={r.apo_prev} pct={r.apo_pct} format={v=>fmtNum(v,1)}/> },
-    { key:"voice", label:"Voice", render:r => <TrendCell curr={r.voice_curr} prev={r.voice_prev} pct={r.voice_pct}/> },
-    { key:"bts", label:"BTS", render:r => <TrendCell curr={r.bts_curr} prev={r.bts_prev} pct={r.bts_pct}/> },
-    { key:"hint", label:"Hint", render:r => <TrendCell curr={r.hint_curr} prev={r.hint_prev} pct={r.hint_pct}/> },
-    { key:"upgrades", label:"Upgrades", render:r => <TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} pct={r.upgrades_pct}/> },
-    { key:"retention", label:"Retention", render:r => (
+    { key:"doorCode",  sortKey:"doorCode",      label:"Door",        muted:true },
+    { key:"market",    sortKey:"market",         label:"Market",      muted:true },
+    { key:"storeName", sortKey:"storeName",      label:"Store",       bold:true },
+    { key:"dm",        sortKey:"dm",             label:"DM",          muted:true },
+    { key:"ppd",       sortKey:"ppd_curr",       label:"PPD",         render:r => <TrendCell curr={r.ppd_curr} prev={r.ppd_prev} pct={r.ppd_pct}/> },
+    { key:"acc",       sortKey:"acc_curr",       label:"Accessories", render:r => <TrendCell curr={r.acc_curr} prev={r.acc_prev} pct={r.acc_pct} format={fmtDollar}/> },
+    { key:"apo",       sortKey:"apo_curr",       label:"APO",         render:r => <TrendCell curr={r.apo_curr} prev={r.apo_prev} pct={r.apo_pct} format={v=>fmtNum(v,1)}/> },
+    { key:"voice",     sortKey:"voice_curr",     label:"Voice",       render:r => <TrendCell curr={r.voice_curr} prev={r.voice_prev} pct={r.voice_pct}/> },
+    { key:"bts",       sortKey:"bts_curr",       label:"BTS",         render:r => <TrendCell curr={r.bts_curr} prev={r.bts_prev} pct={r.bts_pct}/> },
+    { key:"hint",      sortKey:"hint_curr",      label:"Hint",        render:r => <TrendCell curr={r.hint_curr} prev={r.hint_prev} pct={r.hint_pct}/> },
+    { key:"upgrades",  sortKey:"upgrades_curr",  label:"Upgrades",    render:r => <TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} pct={r.upgrades_pct}/> },
+    { key:"retention", sortKey:"ret_curr",       label:"Retention",   render:r => (
       <div>
         <RetentionBar value={r.ret_curr}/>
-        <div style={{ fontSize:10, color:"#9ca3af", marginTop:2 }}>
-          prev: {fmtRetention(r.ret_prev)} <PctBadge value={r.ret_pct}/>
-        </div>
+        <div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>prev: {fmtRetention(r.ret_prev)} <PctBadge value={r.ret_pct}/></div>
       </div>
     )},
   ];
@@ -95,19 +174,19 @@ function momStoreCols() {
 
 function momMarketCols() {
   return [
-    { key:"market", label:"Market", bold:true },
-    { key:"dm", label:"DM", muted:true },
-    { key:"ppd", label:"PPD", render:r => <TrendCell curr={r.ppd_curr} prev={r.ppd_prev} pct={r.ppd_pct}/> },
-    { key:"acc", label:"Accessories", render:r => <TrendCell curr={r.acc_curr} prev={r.acc_prev} pct={r.acc_pct} format={fmtDollar}/> },
-    { key:"apo", label:"APO", render:r => <TrendCell curr={r.apo_curr} prev={r.apo_prev} pct={r.apo_pct} format={v=>fmtNum(v,1)}/> },
-    { key:"voice", label:"Voice", render:r => <TrendCell curr={r.voice_curr} prev={r.voice_prev} pct={r.voice_pct}/> },
-    { key:"bts", label:"BTS", render:r => <TrendCell curr={r.bts_curr} prev={r.bts_prev} pct={r.bts_pct}/> },
-    { key:"hint", label:"Hint", render:r => <TrendCell curr={r.hint_curr} prev={r.hint_prev} pct={r.hint_pct}/> },
-    { key:"upgrades", label:"Upgrades", render:r => <TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} pct={r.upgrades_pct}/> },
-    { key:"retention", label:"Retention", render:r => (
+    { key:"market",    sortKey:"market",         label:"Market",      bold:true },
+    { key:"dm",        sortKey:"dm",             label:"DM",          muted:true },
+    { key:"ppd",       sortKey:"ppd_curr",       label:"PPD",         render:r => <TrendCell curr={r.ppd_curr} prev={r.ppd_prev} pct={r.ppd_pct}/> },
+    { key:"acc",       sortKey:"acc_curr",       label:"Accessories", render:r => <TrendCell curr={r.acc_curr} prev={r.acc_prev} pct={r.acc_pct} format={fmtDollar}/> },
+    { key:"apo",       sortKey:"apo_curr",       label:"APO",         render:r => <TrendCell curr={r.apo_curr} prev={r.apo_prev} pct={r.apo_pct} format={v=>fmtNum(v,1)}/> },
+    { key:"voice",     sortKey:"voice_curr",     label:"Voice",       render:r => <TrendCell curr={r.voice_curr} prev={r.voice_prev} pct={r.voice_pct}/> },
+    { key:"bts",       sortKey:"bts_curr",       label:"BTS",         render:r => <TrendCell curr={r.bts_curr} prev={r.bts_prev} pct={r.bts_pct}/> },
+    { key:"hint",      sortKey:"hint_curr",      label:"Hint",        render:r => <TrendCell curr={r.hint_curr} prev={r.hint_prev} pct={r.hint_pct}/> },
+    { key:"upgrades",  sortKey:"upgrades_curr",  label:"Upgrades",    render:r => <TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} pct={r.upgrades_pct}/> },
+    { key:"retention", sortKey:"ret_curr",       label:"Retention",   render:r => (
       <div>
         <RetentionBar value={r.ret_curr}/>
-        <div style={{ fontSize:10, color:"#9ca3af", marginTop:2 }}>prev: {fmtRetention(r.ret_prev)}</div>
+        <div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>prev: {fmtRetention(r.ret_prev)}</div>
       </div>
     )},
   ];
@@ -115,17 +194,17 @@ function momMarketCols() {
 
 function momDistrictCols() {
   return [
-    { key:"market", label:"Market", bold:true },
-    { key:"mm", label:"MM", muted:true },
-    { key:"dm", label:"DM", muted:true },
-    { key:"ppd", label:"PPD", render:r => <TrendCell curr={r.ppd_curr} prev={r.ppd_prev} pct={r.ppd_pct}/> },
-    { key:"acc", label:"Acc", render:r => <TrendCell curr={r.acc_curr} prev={r.acc_prev} pct={r.acc_pct} format={fmtDollar}/> },
-    { key:"apo", label:"APO", render:r => <TrendCell curr={r.apo_curr} prev={r.apo_prev} pct={r.apo_pct} format={v=>fmtNum(v,1)}/> },
-    { key:"voice", label:"Voice", render:r => <TrendCell curr={r.voice_curr} prev={r.voice_prev} pct={r.voice_pct}/> },
-    { key:"bts", label:"BTS", render:r => <TrendCell curr={r.bts_curr} prev={r.bts_prev} pct={r.bts_pct}/> },
-    { key:"hint", label:"Hint", render:r => <TrendCell curr={r.hint_curr} prev={r.hint_prev} pct={r.hint_pct}/> },
-    { key:"upgrades", label:"Upgrades", render:r => <TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} pct={r.upgrades_pct}/> },
-    { key:"retention", label:"Retention", render:r => <div><RetentionBar value={r.ret_curr}/></div> },
+    { key:"market",    sortKey:"market",         label:"Market",      bold:true },
+    { key:"mm",        sortKey:"mm",             label:"MM",          muted:true },
+    { key:"dm",        sortKey:"dm",             label:"DM",          muted:true },
+    { key:"ppd",       sortKey:"ppd_curr",       label:"PPD",         render:r => <TrendCell curr={r.ppd_curr} prev={r.ppd_prev} pct={r.ppd_pct}/> },
+    { key:"acc",       sortKey:"acc_curr",       label:"Acc",         render:r => <TrendCell curr={r.acc_curr} prev={r.acc_prev} pct={r.acc_pct} format={fmtDollar}/> },
+    { key:"apo",       sortKey:"apo_curr",       label:"APO",         render:r => <TrendCell curr={r.apo_curr} prev={r.apo_prev} pct={r.apo_pct} format={v=>fmtNum(v,1)}/> },
+    { key:"voice",     sortKey:"voice_curr",     label:"Voice",       render:r => <TrendCell curr={r.voice_curr} prev={r.voice_prev} pct={r.voice_pct}/> },
+    { key:"bts",       sortKey:"bts_curr",       label:"BTS",         render:r => <TrendCell curr={r.bts_curr} prev={r.bts_prev} pct={r.bts_pct}/> },
+    { key:"hint",      sortKey:"hint_curr",      label:"Hint",        render:r => <TrendCell curr={r.hint_curr} prev={r.hint_prev} pct={r.hint_pct}/> },
+    { key:"upgrades",  sortKey:"upgrades_curr",  label:"Upgrades",    render:r => <TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} pct={r.upgrades_pct}/> },
+    { key:"retention", sortKey:"ret_curr",       label:"Retention",   render:r => <div><RetentionBar value={r.ret_curr}/></div> },
   ];
 }
 
@@ -269,12 +348,12 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
 
       <div style={{ padding:"20px 28px" }}>
         <div style={{ display:"flex", gap:12, marginBottom:20, flexWrap:"wrap" }}>
-          <StatCard label="Stores"          value={stats.stores||0}             sub="Filtered"                                 accent="purple"/>
-          <StatCard label="Total PPD (MTD)" value={fmtNum(stats.totalPpd)}      sub={`Trend: ${pctLabel(stats.ppdTrend||0)}`}  accent="pink"/>
-          <StatCard label="Total Acc (MTD)" value={fmtDollar(stats.totalAcc)}   sub={`Trend: ${pctLabel(stats.accTrend||0)}`}  accent="purple"/>
-          <StatCard label="Avg APO"         value={fmtNum(stats.avgApo,1)}      sub="Current month"                            accent="blue"/>
-          <StatCard label="Avg Retention"   value={fmtRetention(stats.avgRet)}  sub={`Trend: ${pctLabel(stats.retTrend||0)}`}  accent={stats.retTrend>=0?"green":"red"}/>
-          <StatCard label="Total Voice"     value={fmtNum(stats.totalVoice)}    sub="Current month"                            accent="amber"/>
+          <StatCard label="Stores"          value={stats.stores||0}            sub="Filtered"                                accent="purple"/>
+          <StatCard label="Total PPD (MTD)" value={fmtNum(stats.totalPpd)}     sub={`Trend: ${pctLabel(stats.ppdTrend||0)}`} accent="pink"/>
+          <StatCard label="Total Acc (MTD)" value={fmtDollar(stats.totalAcc)}  sub={`Trend: ${pctLabel(stats.accTrend||0)}`} accent="purple"/>
+          <StatCard label="Avg APO"         value={fmtNum(stats.avgApo,1)}     sub="Current month"                           accent="blue"/>
+          <StatCard label="Avg Retention"   value={fmtRetention(stats.avgRet)} sub={`Trend: ${pctLabel(stats.retTrend||0)}`} accent={stats.retTrend>=0?"green":"red"}/>
+          <StatCard label="Total Voice"     value={fmtNum(stats.totalVoice)}   sub="Current month"                           accent="amber"/>
         </div>
 
         <div style={{ background:"#fff", borderRadius:14, border:"1px solid #e9eaf0", padding:"16px 18px", marginBottom:20 }}>
@@ -333,9 +412,9 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
             </div>
             <div style={{ fontSize:11, color:"#9ca3af" }}>Current ↕ Prev · % change</div>
           </div>
-          {tab==="store"    && <DataTable cols={momStoreCols()}    rows={filteredStores}   emptyMsg="No store data"/>}
-          {tab==="market"   && <DataTable cols={momMarketCols()}   rows={filteredMarket}   emptyMsg="No market data"/>}
-          {tab==="district" && <DataTable cols={momDistrictCols()} rows={filteredDistrict} emptyMsg="No district data"/>}
+          {tab==="store"    && <SortableTable cols={momStoreCols()}    rows={filteredStores}   emptyMsg="No store data"/>}
+          {tab==="market"   && <SortableTable cols={momMarketCols()}   rows={filteredMarket}   emptyMsg="No market data"/>}
+          {tab==="district" && <SortableTable cols={momDistrictCols()} rows={filteredDistrict} emptyMsg="No district data"/>}
         </div>
       </div>
     </div>
