@@ -289,11 +289,11 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
           <StatCard label="Stores" curr={stats.stores||0} format={v=>v} accent="purple"
             sub="Filtered"
           />
-          <StatCard label="Total PPD (MTD)"
+          <StatCard label="Total PPD"
             curr={stats.ppdCurr} prev={stats.ppdPrev} trend={stats.ppdTrend}
             format={fmtNum} accent="pink"
           />
-          <StatCard label="Total ACC (MTD)"
+          <StatCard label="Total ACC"
             curr={stats.accCurr} prev={stats.accPrev} trend={stats.accTrend}
             format={fmtDollar} accent="purple"
           />
