@@ -10,11 +10,9 @@ const PURPLE = "#5b2d8e";
 const PINK   = "#e6007e";
 const COLORS = [PURPLE,"#7c3aed","#9333ea","#a855f7","#c026d3",PINK,"#db2777","#be185d","#065f46","#0e7490"];
 
-// ── Multi-select dropdown component ──────────────────────────
 function MultiSelect({ options, selected, onChange, placeholder }) {
   const [open, setOpen] = useState(false);
   const ref = useRef();
-
   useEffect(() => {
     function handleClick(e) {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
@@ -22,79 +20,46 @@ function MultiSelect({ options, selected, onChange, placeholder }) {
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
-
   function toggle(val) {
-    if (selected.includes(val)) {
-      onChange(selected.filter(v => v !== val));
-    } else {
-      onChange([...selected, val]);
-    }
+    onChange(selected.includes(val) ? selected.filter(v=>v!==val) : [...selected, val]);
   }
-
-  const label = selected.length === 0
-    ? placeholder
-    : selected.length === 1
-      ? selected[0]
-      : `${selected.length} selected`;
-
+  const label = selected.length===0 ? placeholder : selected.length===1 ? selected[0] : `${selected.length} selected`;
   return (
     <div ref={ref} style={{ position:"relative" }}>
-      <button
-        onClick={() => setOpen(o => !o)}
-        style={{
-          padding:"7px 10px", borderRadius:8,
-          border:"1px solid rgba(255,255,255,.2)",
-          fontSize:12, color:"#fff",
-          background:"rgba(255,255,255,.12)",
-          cursor:"pointer", minWidth:140,
-          display:"flex", alignItems:"center", justifyContent:"space-between", gap:8,
-        }}
-      >
-        <span>{label}</span>
-        <span style={{ fontSize:9 }}>▼</span>
+      <button onClick={() => setOpen(o=>!o)} style={{
+        padding:"7px 10px", borderRadius:8, border:"1px solid rgba(255,255,255,.2)",
+        fontSize:12, color:"#fff", background:"rgba(255,255,255,.12)", cursor:"pointer",
+        minWidth:140, display:"flex", alignItems:"center", justifyContent:"space-between", gap:8,
+      }}>
+        <span>{label}</span><span style={{fontSize:9}}>▼</span>
       </button>
-
       {open && (
         <div style={{
           position:"absolute", top:"calc(100% + 4px)", left:0, zIndex:999,
           background:"#fff", borderRadius:10, boxShadow:"0 8px 24px rgba(0,0,0,.15)",
-          border:"1px solid #e5e7eb", minWidth:180, maxHeight:260, overflowY:"auto",
-          padding:"6px 0",
+          border:"1px solid #e5e7eb", minWidth:180, maxHeight:260, overflowY:"auto", padding:"6px 0",
         }}>
-          {/* Clear all */}
           {selected.length > 0 && (
-            <div
-              onClick={() => onChange([])}
-              style={{
-                padding:"7px 14px", fontSize:11, color:PINK,
-                cursor:"pointer", fontWeight:600,
-                borderBottom:"1px solid #f3f4f6",
-              }}
-            >
-              ✕ Clear all
-            </div>
+            <div onClick={() => onChange([])} style={{
+              padding:"7px 14px", fontSize:11, color:PINK, cursor:"pointer",
+              fontWeight:600, borderBottom:"1px solid #f3f4f6",
+            }}>✕ Clear all</div>
           )}
           {options.map(opt => (
-            <div
-              key={opt}
-              onClick={() => toggle(opt)}
-              style={{
-                padding:"8px 14px", fontSize:12, cursor:"pointer",
-                display:"flex", alignItems:"center", gap:8,
-                background: selected.includes(opt) ? "#f3e8ff" : "transparent",
-                color: selected.includes(opt) ? PURPLE : "#374151",
-                fontWeight: selected.includes(opt) ? 600 : 400,
-              }}
-            >
+            <div key={opt} onClick={() => toggle(opt)} style={{
+              padding:"8px 14px", fontSize:12, cursor:"pointer",
+              display:"flex", alignItems:"center", gap:8,
+              background: selected.includes(opt) ? "#f3e8ff" : "transparent",
+              color: selected.includes(opt) ? PURPLE : "#374151",
+              fontWeight: selected.includes(opt) ? 600 : 400,
+            }}>
               <span style={{
                 width:14, height:14, borderRadius:4,
                 border:`2px solid ${selected.includes(opt) ? PURPLE : "#d1d5db"}`,
                 background: selected.includes(opt) ? PURPLE : "transparent",
                 display:"inline-flex", alignItems:"center", justifyContent:"center",
                 fontSize:9, color:"#fff", flexShrink:0,
-              }}>
-                {selected.includes(opt) ? "✓" : ""}
-              </span>
+              }}>{selected.includes(opt) ? "✓" : ""}</span>
               {opt}
             </div>
           ))}
@@ -182,17 +147,17 @@ function calcStats(rows) {
 }
 
 export default function MomPage({ storeData, marketData, districtData, user }) {
-  const [tab, setTab]       = useState("store");
-  const [markets, setMarkets] = useState([]);   // array now
-  const [dm, setDm]         = useState("all");
-  const [search, setSearch] = useState("");
-  const [metric, setMetric] = useState("ppd");
+  const [tab,     setTab]     = useState("store");
+  const [markets, setMarkets] = useState([]);
+  const [dms,     setDms]     = useState([]);
+  const [search,  setSearch]  = useState("");
+  const [metric,  setMetric]  = useState("ppd");
 
   const allMarkets = useMemo(() => (
     [...new Set(storeData.map(r => r.market).filter(Boolean))].sort()
   ), [storeData]);
 
-  const dms = useMemo(() => {
+  const allDms = useMemo(() => {
     let d = storeData;
     if (markets.length) d = d.filter(r => markets.includes(r.market));
     return [...new Set(d.map(r => r.dm).filter(Boolean))].sort();
@@ -202,13 +167,13 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
     let d = storeData;
     if (user.role === "market") d = d.filter(r => r.market === user.market);
     if (markets.length) d = d.filter(r => markets.includes(r.market));
-    if (dm !== "all")   d = d.filter(r => r.dm === dm);
+    if (dms.length)     d = d.filter(r => dms.includes(r.dm));
     if (search) {
       const q = search.toLowerCase();
       d = d.filter(r => (r.storeName||"").toLowerCase().includes(q) || (r.doorCode||"").toString().includes(q));
     }
     return d;
-  }, [storeData, markets, dm, search, user]);
+  }, [storeData, markets, dms, search, user]);
 
   const filteredMarket = useMemo(() => {
     let d = marketData.length ? marketData : [];
@@ -219,12 +184,11 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
   const filteredDistrict = useMemo(() => {
     let d = districtData.length ? districtData : [];
     if (markets.length) d = d.filter(r => markets.includes(r.market));
-    if (dm !== "all")   d = d.filter(r => r.dm === dm);
+    if (dms.length)     d = d.filter(r => dms.includes(r.dm));
     return d;
-  }, [districtData, markets, dm]);
+  }, [districtData, markets, dms]);
 
-  const stats = useMemo(() => calcStats(filteredStores), [filteredStores]);
-
+  const stats   = useMemo(() => calcStats(filteredStores), [filteredStores]);
   const winLose = useMemo(() => {
     return ["ppd","acc","voice","bts","hint","upgrades","retention"].map(m => {
       const pctKey = m === "retention" ? "ret_pct" : `${m}_pct`;
@@ -284,14 +248,16 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
               <MultiSelect
                 options={allMarkets}
                 selected={markets}
-                onChange={val => { setMarkets(val); setDm("all"); }}
+                onChange={val => { setMarkets(val); setDms([]); }}
                 placeholder="All Markets"
               />
             )}
-            <select value={dm} onChange={e => setDm(e.target.value)} style={filterSelect}>
-              <option value="all" style={{color:"#374151"}}>All DMs</option>
-              {dms.map(d => <option key={d} value={d} style={{color:"#374151"}}>{d}</option>)}
-            </select>
+            <MultiSelect
+              options={allDms}
+              selected={dms}
+              onChange={setDms}
+              placeholder="All DMs"
+            />
             <input
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search store…"
@@ -303,12 +269,12 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
 
       <div style={{ padding:"20px 28px" }}>
         <div style={{ display:"flex", gap:12, marginBottom:20, flexWrap:"wrap" }}>
-          <StatCard label="Stores"        value={stats.stores||0}          sub="Filtered"                                accent="purple"/>
-          <StatCard label="Total PPD (MTD)" value={fmtNum(stats.totalPpd)} sub={`Trend: ${pctLabel(stats.ppdTrend||0)}`} accent="pink"/>
-          <StatCard label="Total Acc (MTD)" value={fmtDollar(stats.totalAcc)} sub={`Trend: ${pctLabel(stats.accTrend||0)}`} accent="purple"/>
-          <StatCard label="Avg APO"       value={fmtNum(stats.avgApo,1)}   sub="Current month"                           accent="blue"/>
-          <StatCard label="Avg Retention" value={fmtRetention(stats.avgRet)} sub={`Trend: ${pctLabel(stats.retTrend||0)}`} accent={stats.retTrend>=0?"green":"red"}/>
-          <StatCard label="Total Voice"   value={fmtNum(stats.totalVoice)} sub="Current month"                           accent="amber"/>
+          <StatCard label="Stores"          value={stats.stores||0}             sub="Filtered"                                 accent="purple"/>
+          <StatCard label="Total PPD (MTD)" value={fmtNum(stats.totalPpd)}      sub={`Trend: ${pctLabel(stats.ppdTrend||0)}`}  accent="pink"/>
+          <StatCard label="Total Acc (MTD)" value={fmtDollar(stats.totalAcc)}   sub={`Trend: ${pctLabel(stats.accTrend||0)}`}  accent="purple"/>
+          <StatCard label="Avg APO"         value={fmtNum(stats.avgApo,1)}      sub="Current month"                            accent="blue"/>
+          <StatCard label="Avg Retention"   value={fmtRetention(stats.avgRet)}  sub={`Trend: ${pctLabel(stats.retTrend||0)}`}  accent={stats.retTrend>=0?"green":"red"}/>
+          <StatCard label="Total Voice"     value={fmtNum(stats.totalVoice)}    sub="Current month"                            accent="amber"/>
         </div>
 
         <div style={{ background:"#fff", borderRadius:14, border:"1px solid #e9eaf0", padding:"16px 18px", marginBottom:20 }}>
@@ -318,15 +284,9 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
               <div key={w.metric} style={{ background:"#faf8ff", borderRadius:10, padding:"10px 14px", border:"1px solid #ede9f8", minWidth:100, textAlign:"center" }}>
                 <div style={{ fontSize:11, fontWeight:700, color:PURPLE, marginBottom:6 }}>{w.metric}</div>
                 <div style={{ display:"flex", gap:8, justifyContent:"center" }}>
-                  <div>
-                    <div style={{ fontSize:16, fontWeight:700, color:"#22c55e" }}>{w.up}</div>
-                    <div style={{ fontSize:9, color:"#9ca3af" }}>▲ UP</div>
-                  </div>
+                  <div><div style={{ fontSize:16, fontWeight:700, color:"#22c55e" }}>{w.up}</div><div style={{ fontSize:9, color:"#9ca3af" }}>▲ UP</div></div>
                   <div style={{ width:1, background:"#e5e7eb" }}/>
-                  <div>
-                    <div style={{ fontSize:16, fontWeight:700, color:"#ef4444" }}>{w.down}</div>
-                    <div style={{ fontSize:9, color:"#9ca3af" }}>▼ DOWN</div>
-                  </div>
+                  <div><div style={{ fontSize:16, fontWeight:700, color:"#ef4444" }}>{w.down}</div><div style={{ fontSize:9, color:"#9ca3af" }}>▼ DOWN</div></div>
                 </div>
               </div>
             ))}
@@ -340,8 +300,7 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
               {Object.entries(METRIC_MAP).map(([k,v]) => (
                 <button key={k} onClick={() => setMetric(k)} style={{
                   padding:"5px 12px", borderRadius:20, border:"none", cursor:"pointer", fontSize:11, fontWeight:600,
-                  background: metric===k ? PURPLE : "#f3e8ff",
-                  color: metric===k ? "#fff" : PURPLE,
+                  background: metric===k ? PURPLE : "#f3e8ff", color: metric===k ? "#fff" : PURPLE,
                 }}>{v.label}</button>
               ))}
             </div>
