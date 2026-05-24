@@ -124,7 +124,7 @@ function calcStats(rows) {
   const sum = fn => rows.reduce((s,r) => s+(fn(r)||0), 0);
   const avg = fn => sum(fn)/rows.length;
   return {
-    stores: rows.length,
+    stores:     rows.length,
     totalPpd:   sum(r=>r.ppd_curr),
     totalAcc:   sum(r=>r.acc_curr),
     totalVoice: sum(r=>r.voice_curr),
@@ -135,17 +135,17 @@ function calcStats(rows) {
 }
 
 export default function WowPage({ storeData, marketData, districtData, user }) {
-  const [tab,      setTab]     = useState("store");
-  const [markets,  setMarkets] = useState([]);
-  const [dm,       setDm]      = useState("all");
-  const [search,   setSearch]  = useState("");
-  const [metric,   setMetric]  = useState("ppd");
+  const [tab,     setTab]     = useState("store");
+  const [markets, setMarkets] = useState([]);
+  const [dms,     setDms]     = useState([]);
+  const [search,  setSearch]  = useState("");
+  const [metric,  setMetric]  = useState("ppd");
 
   const allMarkets = useMemo(() => (
     [...new Set(storeData.map(r=>r.market).filter(Boolean))].sort()
   ), [storeData]);
 
-  const dms = useMemo(() => {
+  const allDms = useMemo(() => {
     let d = storeData;
     if (markets.length) d = d.filter(r => markets.includes(r.market));
     return [...new Set(d.map(r=>r.dm).filter(Boolean))].sort();
@@ -155,13 +155,13 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
     let d = storeData;
     if (user.role==="market") d = d.filter(r=>r.market===user.market);
     if (markets.length) d = d.filter(r => markets.includes(r.market));
-    if (dm!=="all")     d = d.filter(r=>r.dm===dm);
+    if (dms.length)     d = d.filter(r => dms.includes(r.dm));
     if (search) {
       const q = search.toLowerCase();
       d = d.filter(r=>(r.storeName||"").toLowerCase().includes(q)||(r.doorCode||"").toString().includes(q));
     }
     return d;
-  }, [storeData, markets, dm, search, user]);
+  }, [storeData, markets, dms, search, user]);
 
   const filteredMarket = useMemo(() => {
     let d = marketData.length ? marketData : [];
@@ -172,12 +172,12 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
   const filteredDistrict = useMemo(() => {
     let d = districtData.length ? districtData : [];
     if (markets.length) d = d.filter(r => markets.includes(r.market));
-    if (dm!=="all")     d = d.filter(r=>r.dm===dm);
+    if (dms.length)     d = d.filter(r => dms.includes(r.dm));
     return d;
-  }, [districtData, markets, dm]);
+  }, [districtData, markets, dms]);
 
-  const stats    = useMemo(() => calcStats(filteredStores), [filteredStores]);
-  const winLose  = useMemo(() => {
+  const stats   = useMemo(() => calcStats(filteredStores), [filteredStores]);
+  const winLose = useMemo(() => {
     return ["ppd","acc","voice","bts","hint","upgrades","retention"].map(m => {
       const pctKey = m==="retention" ? "ret_pct" : `${m}_pct`;
       return { metric:m.toUpperCase(), up:filteredStores.filter(r=>(r[pctKey]||0)>0).length, down:filteredStores.filter(r=>(r[pctKey]||0)<0).length };
@@ -205,6 +205,7 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
   }, [filteredStores, mdef]);
 
   const filterSelect = { padding:"7px 10px", borderRadius:8, border:"1px solid rgba(255,255,255,.2)", fontSize:12, color:"#fff", background:"rgba(255,255,255,.12)", cursor:"pointer" };
+
   const tabBtn = (id, label) => {
     const active = tab===id;
     return <button onClick={()=>setTab(id)} style={{ padding:"7px 18px", borderRadius:7, border:"none", cursor:"pointer", fontSize:12, fontWeight:600, background:active?"#fff":"transparent", color:active?PURPLE:"rgba(255,255,255,.5)" }}>{label}</button>;
@@ -221,14 +222,16 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
               <MultiSelect
                 options={allMarkets}
                 selected={markets}
-                onChange={val => { setMarkets(val); setDm("all"); }}
+                onChange={val => { setMarkets(val); setDms([]); }}
                 placeholder="All Markets"
               />
             )}
-            <select value={dm} onChange={e=>setDm(e.target.value)} style={filterSelect}>
-              <option value="all" style={{color:"#374151"}}>All DMs</option>
-              {dms.map(d=><option key={d} value={d} style={{color:"#374151"}}>{d}</option>)}
-            </select>
+            <MultiSelect
+              options={allDms}
+              selected={dms}
+              onChange={setDms}
+              placeholder="All DMs"
+            />
             <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search store…" style={{...filterSelect,width:150,outline:"none"}}/>
           </div>
         }
@@ -236,11 +239,11 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
 
       <div style={{ padding:"20px 28px" }}>
         <div style={{ display:"flex", gap:12, marginBottom:20, flexWrap:"wrap" }}>
-          <StatCard label="Stores"        value={stats.stores||0}            sub="Filtered"                                 accent="purple"/>
-          <StatCard label="Total PPD"     value={fmtNum(stats.totalPpd)}     sub={`Trend: ${pctLabel(stats.ppdTrend||0)}`}  accent="pink"/>
-          <StatCard label="Total Acc"     value={fmtDollar(stats.totalAcc)}  sub="Current week"                             accent="purple"/>
-          <StatCard label="Total Voice"   value={fmtNum(stats.totalVoice)}   sub="Current week"                             accent="blue"/>
-          <StatCard label="Avg Retention" value={fmtRetention(stats.avgRet)} sub={`Trend: ${pctLabel(stats.retTrend||0)}`}  accent={stats.retTrend>=0?"green":"red"}/>
+          <StatCard label="Stores"        value={stats.stores||0}            sub="Filtered"                                accent="purple"/>
+          <StatCard label="Total PPD"     value={fmtNum(stats.totalPpd)}     sub={`Trend: ${pctLabel(stats.ppdTrend||0)}`} accent="pink"/>
+          <StatCard label="Total Acc"     value={fmtDollar(stats.totalAcc)}  sub="Current week"                            accent="purple"/>
+          <StatCard label="Total Voice"   value={fmtNum(stats.totalVoice)}   sub="Current week"                            accent="blue"/>
+          <StatCard label="Avg Retention" value={fmtRetention(stats.avgRet)} sub={`Trend: ${pctLabel(stats.retTrend||0)}`} accent={stats.retTrend>=0?"green":"red"}/>
         </div>
 
         <div style={{ background:"#fff", borderRadius:14, border:"1px solid #e9eaf0", padding:"16px 18px", marginBottom:20 }}>
