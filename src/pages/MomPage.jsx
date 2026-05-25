@@ -10,6 +10,24 @@ const PURPLE = "#5b2d8e";
 const PINK   = "#e6007e";
 const COLORS = [PURPLE,"#7c3aed","#9333ea","#a855f7","#c026d3",PINK,"#db2777","#be185d","#065f46","#0e7490"];
 
+// Custom helper wrapper to reliably print MTD data values safely right next to prev value
+function CustomTrendCell({ curr, prev, mtd, pct, format = fmtNum }) {
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span style={{ fontWeight: 600, color: "#111827" }}>{format(curr)}</span>
+        <PctBadge value={pct} />
+      </div>
+      <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 2 }}>
+        <span>prev: {format(prev)}</span>
+        {mtd !== undefined && mtd !== null && (
+          <span style={{ color: "#6b7280", marginLeft: 4 }}>| MTD: {format(mtd)}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function MultiSelect({ options, selected, onChange, placeholder }) {
   const [open, setOpen] = useState(false);
   const ref = useRef();
@@ -151,19 +169,18 @@ function momStoreCols() {
     { key:"market",    sortKey:"market",        label:"Market",      muted:true },
     { key:"storeName", sortKey:"storeName",     label:"Store",       bold:true },
     { key:"dm",        sortKey:"dm",            label:"DM",          muted:true },
-    { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr} prev={r.ppd_prev} mtd={r.ppd_mtd} pct={r.ppd_pct}/> },
-    { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><TrendCell curr={r.acc_curr} prev={r.acc_prev} mtd={r.acc_mtd} pct={r.acc_pct} format={fmtDollar}/> },
-    { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><TrendCell curr={r.apo_curr} prev={r.apo_prev} mtd={r.apo_mtd} pct={r.apo_pct} format={v=>fmtNum(v,0)}/> },
-    { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr} prev={r.voice_prev} mtd={r.voice_mtd} pct={r.voice_pct}/> },
-    { key:"bts",       sortKey:"bts_curr",      label:"BTS",         render:r=><TrendCell curr={r.bts_curr} prev={r.bts_prev} mtd={r.bts_mtd} pct={r.bts_pct}/> },
-    { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><TrendCell curr={r.hint_curr} prev={r.hint_prev} mtd={r.hint_mtd} pct={r.hint_pct}/> },
-    { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} mtd={r.upgrades_mtd} pct={r.upgrades_pct}/> },
+    { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><CustomTrendCell curr={r.ppd_curr} prev={r.ppd_prev} mtd={r.ppd_mtd} pct={r.ppd_pct}/> },
+    { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><CustomTrendCell curr={r.acc_curr} prev={r.acc_prev} mtd={r.acc_mtd} pct={r.acc_pct} format={fmtDollar}/> },
+    { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><CustomTrendCell curr={r.apo_curr} prev={r.apo_prev} mtd={r.apo_mtd} pct={r.apo_pct} format={v=>fmtNum(v,0)}/> },
+    { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><CustomTrendCell curr={r.voice_curr} prev={r.voice_prev} mtd={r.voice_mtd} pct={r.voice_pct}/> },
+    { key:"bts",       sortKey:"bts_curr",      label:"BTS",         render:r=><CustomTrendCell curr={r.bts_curr} prev={r.bts_prev} mtd={r.bts_mtd} pct={r.bts_pct}/> },
+    { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><CustomTrendCell curr={r.hint_curr} prev={r.hint_prev} mtd={r.hint_mtd} pct={r.hint_pct}/> },
+    { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><CustomTrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} mtd={r.upgrades_mtd} pct={r.upgrades_pct}/> },
     { key:"retention", sortKey:"ret_curr",      label:"Retention",   render:r=>(
       <div>
         <RetentionBar value={r.ret_curr}/>
-        <div style={{fontSize:10,color:"#9ca3af",marginTop:2,display:"flex",gap:6,alignItems:"center"}}>
-          <span>prev: {fmtRetention(r.ret_prev)}</span>
-          {r.ret_mtd !== undefined && <span style={{color:"#6b7280"}}>• MTD: {fmtRetention(r.ret_mtd)}</span>}
+        <div style={{fontSize:10,color:"#9ca3af",marginTop:2,display:"flex",gap:4,alignItems:"center"}}>
+          <span>prev: {fmtRetention(r.ret_prev)} {r.ret_mtd !== undefined && r.ret_mtd !== null && `| MTD: ${fmtRetention(r.ret_mtd)}`}</span>
           <PctBadge value={r.ret_pct}/>
         </div>
       </div>
@@ -175,18 +192,18 @@ function momMarketCols() {
   return [
     { key:"market",    sortKey:"market",        label:"Market",      bold:true },
     { key:"dm",        sortKey:"dm",            label:"DM",          muted:true },
-    { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr} prev={r.ppd_prev} mtd={r.ppd_mtd} pct={r.ppd_pct}/> },
-    { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><TrendCell curr={r.acc_curr} prev={r.acc_prev} mtd={r.acc_mtd} pct={r.acc_pct} format={fmtDollar}/> },
-    { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><TrendCell curr={r.apo_curr} prev={r.apo_prev} mtd={r.apo_mtd} pct={r.apo_pct} format={v=>fmtNum(v,0)}/> },
-    { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr} prev={r.voice_prev} mtd={r.voice_mtd} pct={r.voice_pct}/> },
-    { key:"bts",       sortKey:"bts_curr",      label:"BTS",         render:r=><TrendCell curr={r.bts_curr} prev={r.bts_prev} mtd={r.bts_mtd} pct={r.bts_pct}/> },
-    { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><TrendCell curr={r.hint_curr} prev={r.hint_prev} mtd={r.hint_mtd} pct={r.hint_pct}/> },
-    { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} mtd={r.upgrades_mtd} pct={r.upgrades_pct}/> },
+    { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><CustomTrendCell curr={r.ppd_curr} prev={r.ppd_prev} mtd={r.ppd_mtd} pct={r.ppd_pct}/> },
+    { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><CustomTrendCell curr={r.acc_curr} prev={r.acc_prev} mtd={r.acc_mtd} pct={r.acc_pct} format={fmtDollar}/> },
+    { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><CustomTrendCell curr={r.apo_curr} prev={r.apo_prev} mtd={r.apo_mtd} pct={r.apo_pct} format={v=>fmtNum(v,0)}/> },
+    { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><CustomTrendCell curr={r.voice_curr} prev={r.voice_prev} mtd={r.voice_mtd} pct={r.voice_pct}/> },
+    { key:"bts",       sortKey:"bts_curr",      label:"BTS",         render:r=><CustomTrendCell curr={r.bts_curr} prev={r.bts_prev} mtd={r.bts_mtd} pct={r.bts_pct}/> },
+    { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><CustomTrendCell curr={r.hint_curr} prev={r.hint_prev} mtd={r.hint_mtd} pct={r.hint_pct}/> },
+    { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><CustomTrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} mtd={r.upgrades_mtd} pct={r.upgrades_pct}/> },
     { key:"retention", sortKey:"ret_curr",      label:"Retention",   render:r=>(
       <div>
         <RetentionBar value={r.ret_curr}/>
         <div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>
-          prev: {fmtRetention(r.ret_prev)} {r.ret_mtd !== undefined && `• MTD: ${fmtRetention(r.ret_mtd)}`}
+          prev: {fmtRetention(r.ret_prev)} {r.ret_mtd !== undefined && r.ret_mtd !== null && `| MTD: ${fmtRetention(r.ret_mtd)}`}
         </div>
       </div>
     )},
@@ -198,14 +215,21 @@ function momDistrictCols() {
     { key:"market",    sortKey:"market",        label:"Market",      bold:true },
     { key:"mm",        sortKey:"mm",            label:"MM",          muted:true },
     { key:"dm",        sortKey:"dm",            label:"DM",          muted:true },
-    { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr} prev={r.ppd_prev} mtd={r.ppd_mtd} pct={r.ppd_pct}/> },
-    { key:"acc",       sortKey:"acc_curr",      label:"Acc",         render:r=><TrendCell curr={r.acc_curr} prev={r.acc_prev} mtd={r.acc_mtd} pct={r.acc_pct} format={fmtDollar}/> },
-    { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><TrendCell curr={r.apo_curr} prev={r.apo_prev} mtd={r.apo_mtd} pct={r.apo_pct} format={v=>fmtNum(v,0)}/> },
-    { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr} prev={r.voice_prev} mtd={r.voice_mtd} pct={r.voice_pct}/> },
-    { key:"bts",       sortKey:"bts_curr",      label:"BTS",         render:r=><TrendCell curr={r.bts_curr} prev={r.bts_prev} mtd={r.bts_mtd} pct={r.bts_pct}/> },
-    { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><TrendCell curr={r.hint_curr} prev={r.hint_prev} mtd={r.hint_mtd} pct={r.hint_pct}/> },
-    { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} mtd={r.upgrades_mtd} pct={r.upgrades_pct}/> },
-    { key:"retention", sortKey:"ret_curr",      label:"Retention",   render:r=><div><RetentionBar value={r.ret_curr}/></div> },
+    { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><CustomTrendCell curr={r.ppd_curr} prev={r.ppd_prev} mtd={r.ppd_mtd} pct={r.ppd_pct}/> },
+    { key:"acc",       sortKey:"acc_curr",      label:"Acc",         render:r=><CustomTrendCell curr={r.acc_curr} prev={r.acc_prev} mtd={r.acc_mtd} pct={r.acc_pct} format={fmtDollar}/> },
+    { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><CustomTrendCell curr={r.apo_curr} prev={r.apo_prev} mtd={r.apo_mtd} pct={r.apo_pct} format={v=>fmtNum(v,0)}/> },
+    { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><CustomTrendCell curr={r.voice_curr} prev={r.voice_prev} mtd={r.voice_mtd} pct={r.voice_pct}/> },
+    { key:"bts",       sortKey:"bts_curr",      label:"BTS",         render:r=><CustomTrendCell curr={r.bts_curr} prev={r.bts_prev} mtd={r.bts_mtd} pct={r.bts_pct}/> },
+    { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><CustomTrendCell curr={r.hint_curr} prev={r.hint_prev} mtd={r.hint_mtd} pct={r.hint_pct}/> },
+    { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><CustomTrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} mtd={r.upgrades_mtd} pct={r.upgrades_pct}/> },
+    { key:"retention", sortKey:"ret_curr",      label:"Retention",   render:r=>(
+      <div>
+        <RetentionBar value={r.ret_curr}/>
+        <div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>
+          prev: {fmtRetention(r.ret_prev)} {r.ret_mtd !== undefined && r.ret_mtd !== null && `| MTD: ${fmtRetention(r.ret_mtd)}`}
+        </div>
+      </div>
+    )},
   ];
 }
 
@@ -400,7 +424,7 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
             <div style={{fontWeight:600,color:PURPLE,fontSize:14}}>
               {tab==="store"?`Store Level · ${filteredStores.length} stores`:tab==="market"?`Market Wise · ${filteredMarket.length} markets`:`District Wise · ${filteredDistrict.length} districts`}
             </div>
-            <div style={{fontSize:11,color:"#9ca3af"}}>Current ↕ Prev · MTD · % change</div>
+            <div style={{fontSize:11,color:"#9ca3af"}}>Current ↕ prev | MTD · % change</div>
           </div>
           {tab==="store"    && <SortableTable cols={momStoreCols()}    rows={filteredStores}   emptyMsg="No store data"/>}
           {tab==="market"   && <SortableTable cols={momMarketCols()}   rows={filteredMarket}   emptyMsg="No market data"/>}
