@@ -23,6 +23,7 @@ export default function Shell({
 }) {
   const [toast, setToast] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false); // Sidebar collapse state
   const fileRef = useRef();
 
   function showToast(msg, type="success") {
@@ -49,7 +50,6 @@ export default function Shell({
         }
 
         if (isMOM) {
-          // Sheet names: 'MOM RETENTION REPORT', 'MARKET WISE', 'DISTRICT WISE'
           const storeName = wb.SheetNames.find(n => n.toUpperCase().includes("MOM") || n.toUpperCase().includes("RETENTION")) || wb.SheetNames[0];
           const mktName   = wb.SheetNames.find(n => n.toUpperCase().includes("MARKET")) || wb.SheetNames[1];
           const distName  = wb.SheetNames.find(n => n.toUpperCase().includes("DISTRICT")) || wb.SheetNames[2];
@@ -89,16 +89,55 @@ export default function Shell({
   }
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f0eaf8", fontFamily:"'DM Sans','Segoe UI',sans-serif" }}>
-      {/* Sidebar */}
+    <div style={{ minHeight:"100vh", background:"#f0eaf8", fontFamily:"'DM Sans','Segoe UI',sans-serif", position:"relative" }}>
+      
+      {/* Collapse/Expand Floating Trigger Button */}
+      <button 
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        style={{
+          position: "fixed",
+          top: "24px",
+          left: isCollapsed ? "12px" : "216px", // Dynamically floats outside edge
+          zIndex: 999,
+          background: DARK,
+          color: "#fff",
+          border: `1px solid ${PINK}`,
+          borderRadius: "50%",
+          width: "28px",
+          height: "28px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+          transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
+          fontSize: "11px",
+          outline: "none"
+        }}
+        title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+      >
+        <span style={{ 
+          display: "inline-block", 
+          transform: isCollapsed ? "rotate(180deg)" : "rotate(0deg)", 
+          transition: "transform .3s" 
+        }}>
+          ◀
+        </span>
+      </button>
+
+      {/* Sidebar Layout Wrapper */}
       <div style={{
-        position:"fixed", top:0, left:0, bottom:0, width:230,
+        position:"fixed", top:0, left:0, bottom:0, 
+        width: isCollapsed ? 0 : 230, // Collapses completely to 0 width
         background: DARK, display:"flex", flexDirection:"column",
-        borderRight:"1px solid rgba(255,255,255,.06)", zIndex:100,
-        boxShadow:"4px 0 20px rgba(0,0,0,.3)"
+        borderRight: isCollapsed ? "none" : "1px solid rgba(255,255,255,.06)", 
+        zIndex:100,
+        boxShadow: isCollapsed ? "none" : "4px 0 20px rgba(0,0,0,.3)",
+        transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)", // Smooth sliding window transitions
+        overflow: "hidden" // Prevents child elements from leaking out when 0px wide
       }}>
         {/* Logo */}
-        <div style={{ padding:"18px 16px 16px", borderBottom:"1px solid rgba(255,255,255,.08)" }}>
+        <div style={{ padding:"18px 16px 16px", borderBottom:"1px solid rgba(255,255,255,.08)", whiteSpace: "nowrap" }}>
           <div style={{ display:"flex", alignItems:"center", gap:12 }}>
             <img src="/logo.png" alt="Metro by T-Mobile"
               style={{ width:52, height:52, borderRadius:10, objectFit:"cover", flexShrink:0 }}/>
@@ -111,8 +150,8 @@ export default function Shell({
           </div>
         </div>
 
-        {/* Nav */}
-        <nav style={{ flex:1, padding:"14px 10px", display:"flex", flexDirection:"column", gap:4 }}>
+        {/* Nav Links */}
+        <nav style={{ flex:1, padding:"14px 10px", display:"flex", flexDirection:"column", gap:4, whiteSpace: "nowrap" }}>
           <div style={{ color:"rgba(255,255,255,.25)", fontSize:10, fontWeight:600,
             letterSpacing:".08em", padding:"0 8px", marginBottom:8 }}>REPORTS</div>
           {NAV.map(n => {
@@ -138,10 +177,9 @@ export default function Shell({
           })}
         </nav>
 
-  
-        {/* User */}
+        {/* User Session Info */}
         <div style={{ padding:"12px 14px", borderTop:"1px solid rgba(255,255,255,.08)",
-          display:"flex", alignItems:"center", gap:10 }}>
+          display:"flex", alignItems:"center", gap:10, whiteSpace: "nowrap" }}>
           <div style={{
             width:30, height:30, borderRadius:"50%",
             background:`linear-gradient(135deg,${PURPLE},${PINK})`,
@@ -159,10 +197,17 @@ export default function Shell({
         </div>
       </div>
 
-      {/* Main */}
-      <div style={{ marginLeft:230, minHeight:"100vh" }}>{children}</div>
+      {/* Main Content Area Wrapper */}
+      <div style={{ 
+        marginLeft: isCollapsed ? 0 : 230, // Instantly expands margin space to 0 to stretch till the very edge corner
+        minHeight: "100vh",
+        transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)", // Perfectly synced timing with sidebar animation
+        position: "relative"
+      }}>
+        {children}
+      </div>
 
-      {/* Toast */}
+      {/* Toast notifications */}
       {toast && (
         <div style={{
           position:"fixed", bottom:24, right:24, zIndex:1000,
