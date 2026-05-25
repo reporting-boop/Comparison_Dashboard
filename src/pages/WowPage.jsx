@@ -65,27 +65,69 @@ function SortableTable({ cols, rows, emptyMsg }) {
   }
   if(!rows.length) return <div style={{padding:"40px",textAlign:"center",color:"#9ca3af",fontSize:13}}>{emptyMsg}</div>;
   return (
-    <div style={{overflowX:"auto"}}>
-      <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+    <div style={{overflowX:"auto", maxWidth:"100%"}}>
+      <table style={{width:"100%",borderCollapse:"separate",borderSpacing:0,fontSize:12}}>
         <thead>
-          <tr style={{borderBottom:"2px solid #f3f4f6",background:"#fafafa"}}>
-            {cols.map(c=>(
-              <th key={c.key} onClick={()=>handleSort(c.sortKey||c.key)} style={{padding:"10px 12px",textAlign:"left",fontWeight:700,color:PURPLE,fontSize:11,letterSpacing:.5,textTransform:"uppercase",cursor:"pointer",userSelect:"none",whiteSpace:"nowrap"}}>
-                {c.label}{arrow(c.sortKey||c.key)}
-              </th>
-            ))}
+          <tr style={{background:"#fafafa"}}>
+            {cols.map(c=>{
+              const headerStyle = {
+                padding:"12px 12px",
+                textAlign:"left",
+                fontWeight:700,
+                color:PURPLE,
+                fontSize:11,
+                letterSpacing:.5,
+                textTransform:"uppercase",
+                cursor:"pointer",
+                userSelect:"none",
+                whiteSpace:"nowrap",
+                borderBottom:"2px solid #f3f4f6",
+                background:"#fafafa",
+                zIndex: c.sticky ? 20 : 1,
+                ...(c.sticky && {
+                  position: "sticky",
+                  left: c.leftOffset || 0,
+                  boxShadow: c.lastSticky ? "4px 0 8px -4px rgba(0,0,0,0.12), inset 0 -2px 0 #f3f4f6" : "none"
+                })
+              };
+              return (
+                <th key={c.key} onClick={()=>handleSort(c.sortKey||c.key)} style={headerStyle}>
+                  {c.label}{arrow(c.sortKey||c.key)}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>
-          {sorted.map((row,i)=>(
-            <tr key={i} style={{borderBottom:"1px solid #f9fafb",background:i%2===0?"#fff":"#fdfcff"}}>
-              {cols.map(c=>(
-                <td key={c.key} style={{padding:"10px 12px",whiteSpace:"nowrap",color:c.muted?"#9ca3af":c.bold?"#111827":"#374151",fontWeight:c.bold?600:400}}>
-                  {c.render?c.render(row):row[c.key]??"—"}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {sorted.map((row,i)=>{
+            const rowBg = i%2===0?"#fff":"#fdfcff";
+            return (
+              <tr key={i} style={{background:rowBg}}>
+                {cols.map(c=>{
+                  const cellStyle = {
+                    padding:"14px 12px",
+                    whiteSpace:"nowrap",
+                    verticalAlign:"top",
+                    color:c.muted?"#9ca3af":c.bold?"#111827":"#374151",
+                    fontWeight:c.bold?600:400,
+                    borderBottom:"1px solid #f9fafb",
+                    background: c.sticky ? rowBg : "transparent",
+                    zIndex: c.sticky ? 10 : 1,
+                    ...(c.sticky && {
+                      position: "sticky",
+                      left: c.leftOffset || 0,
+                      boxShadow: c.lastSticky ? "4px 0 8px -4px rgba(0,0,0,0.12)" : "none"
+                    })
+                  };
+                  return (
+                    <td key={c.key} style={cellStyle}>
+                      {c.render?c.render(row):row[c.key]??"—"}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -94,10 +136,10 @@ function SortableTable({ cols, rows, emptyMsg }) {
 
 function wowStoreCols() {
   return [
-    { key:"doorCode",  sortKey:"doorCode",     label:"Door",        muted:true },
-    { key:"market",    sortKey:"market",        label:"Market",      muted:true },
-    { key:"storeName", sortKey:"storeName",     label:"Store",       bold:true },
-    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true },
+    { key:"doorCode",  sortKey:"doorCode",     label:"Door",        muted:true, sticky: true, leftOffset: 0 },
+    { key:"market",    sortKey:"market",        label:"Market",      muted:true, sticky: true, leftOffset: 80 },
+    { key:"storeName", sortKey:"storeName",     label:"Store",       bold:true,  sticky: true, leftOffset: 170 },
+    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky: true, leftOffset: 330, lastSticky: true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr}      prev={r.ppd_prev}      pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><TrendCell curr={r.acc_curr}      prev={r.acc_prev}      pct={r.acc_pct} format={fmtDollar}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr}    prev={r.voice_prev}    pct={r.voice_pct}/> },
@@ -112,8 +154,8 @@ function wowStoreCols() {
 
 function wowMarketCols() {
   return [
-    { key:"market",    sortKey:"market",        label:"Market",      bold:true },
-    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true },
+    { key:"market",    sortKey:"market",        label:"Market",      bold:true,  sticky: true, leftOffset: 0 },
+    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky: true, leftOffset: 120, lastSticky: true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr}      prev={r.ppd_prev}      pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><TrendCell curr={r.acc_curr}      prev={r.acc_prev}      pct={r.acc_pct} format={fmtDollar}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr}    prev={r.voice_prev}    pct={r.voice_pct}/> },
@@ -126,9 +168,9 @@ function wowMarketCols() {
 
 function wowDistrictCols() {
   return [
-    { key:"market",    sortKey:"market",        label:"Market",      bold:true },
-    { key:"mm",        sortKey:"mm",            label:"MM",          muted:true },
-    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true },
+    { key:"market",    sortKey:"market",        label:"Market",      bold:true,  sticky: true, leftOffset: 0 },
+    { key:"mm",        sortKey:"mm",            label:"MM",          muted:true, sticky: true, leftOffset: 120 },
+    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky: true, leftOffset: 240, lastSticky: true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr}      prev={r.ppd_prev}      pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Acc",         render:r=><TrendCell curr={r.acc_curr}      prev={r.acc_prev}      pct={r.acc_pct} format={fmtDollar}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr}    prev={r.voice_prev}    pct={r.voice_pct}/> },
@@ -201,7 +243,7 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
     const map={};
     filteredStores.forEach(r=>{const k=r.market||"Unknown";if(!map[k])map[k]={name:k,curr:0,prev:0};map[k].curr+=r[mdef.curr]||0;map[k].prev+=r[mdef.prev]||0;});
     return Object.values(map).sort((a,b)=>b.curr-a.curr).slice(0,12);
-  },[filteredStores,mdef]);
+  }, [filteredStores,mdef]);
 
   const filterSelect={padding:"7px 10px",borderRadius:8,border:"1px solid rgba(255,255,255,.2)",fontSize:12,color:"#fff",background:"rgba(255,255,255,.12)",cursor:"pointer"};
   const tabBtn=(id,label)=>{const active=tab===id;return<button onClick={()=>setTab(id)} style={{padding:"7px 18px",borderRadius:7,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:active?"#fff":"transparent",color:active?PURPLE:"rgba(255,255,255,.5)"}}>{label}</button>;};
@@ -223,15 +265,16 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
       <div style={{padding:"20px 28px"}}>
 
         {/* STAT CARDS */}
-<div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap"}}>
-  <StatCard label="Total PPD"      curr={stats.ppdCurr}      prev={stats.ppdPrev}      trend={stats.ppdTrend}      format={fmtNum}         accent="pink"/>
-  <StatCard label="Total ACC"      curr={stats.accCurr}      prev={stats.accPrev}      trend={stats.accTrend}      format={fmtDollar}       accent="purple"/>
-  <StatCard label="Total Voice"    curr={stats.voiceCurr}    prev={stats.voicePrev}    trend={stats.voiceTrend}    format={fmtNum}          accent="amber"/>
-  <StatCard label="Total BTS"      curr={stats.btsCurr}      prev={stats.btsPrev}      trend={stats.btsTrend}      format={fmtNum}          accent="purple"/>
-  <StatCard label="Total Hint"     curr={stats.hintCurr}     prev={stats.hintPrev}     trend={stats.hintTrend}     format={fmtNum}          accent="pink"/>
-  <StatCard label="Total Upgrades" curr={stats.upgradesCurr} prev={stats.upgradesPrev} trend={stats.upgradesTrend} format={fmtNum}          accent="blue"/>
-  <StatCard label="Avg Retention"  curr={stats.retCurr}      prev={stats.retPrev}      trend={stats.retTrend}      format={fmtRetention}    accent={stats.retTrend>=0?"green":"red"}/>
-</div>
+        <div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap"}}>
+          <StatCard label="Total PPD"      curr={stats.ppdCurr}      prev={stats.ppdPrev}      trend={stats.ppdTrend}      format={fmtNum}           accent="pink"/>
+          <StatCard label="Total ACC"      curr={stats.accCurr}      prev={stats.accPrev}      trend={stats.accTrend}      format={fmtDollar}         accent="purple"/>
+          <StatCard label="Total Voice"    curr={stats.voiceCurr}    prev={stats.voicePrev}    trend={stats.voiceTrend}    format={fmtNum}            accent="amber"/>
+          <StatCard label="Total BTS"      curr={stats.btsCurr}      prev={stats.btsPrev}      trend={stats.btsTrend}      format={fmtNum}            accent="purple"/>
+          <StatCard label="Total Hint"     curr={stats.hintCurr}     prev={stats.hintPrev}     trend={stats.hintTrend}     format={fmtNum}            accent="pink"/>
+          <StatCard label="Total Upgrades" curr={stats.upgradesCurr} prev={stats.upgradesPrev} trend={stats.upgradesTrend} format={fmtNum}            accent="blue"/>
+          <StatCard label="Avg Retention"  curr={stats.retCurr}      prev={stats.retPrev}      trend={stats.retTrend}      format={fmtRetention}      accent={stats.retTrend>=0?"green":"red"}/>
+        </div>
+
         {/* WIN/LOSE */}
         <div style={{background:"#fff",borderRadius:14,border:"1px solid #e9eaf0",padding:"16px 18px",marginBottom:20}}>
           <div style={{fontWeight:600,color:PURPLE,fontSize:13,marginBottom:12}}>Store Performance vs Last Week</div>
@@ -288,9 +331,9 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
             </div>
             <div style={{fontSize:11,color:"#9ca3af"}}>Current ↕ Prev · % change</div>
           </div>
-          {tab==="store"    &&<SortableTable cols={wowStoreCols()}    rows={filteredStores}   emptyMsg="No store data"/>}
-          {tab==="market"   &&<SortableTable cols={wowMarketCols()}   rows={filteredMarket}   emptyMsg="No market data"/>}
-          {tab==="district" &&<SortableTable cols={wowDistrictCols()} rows={filteredDistrict} emptyMsg="No district data"/>}
+          {tab==="store"    && <SortableTable cols={wowStoreCols()}    rows={filteredStores}   emptyMsg="No store data"/>}
+          {tab==="market"   && <SortableTable cols={wowMarketCols()}   rows={filteredMarket}   emptyMsg="No market data"/>}
+          {tab==="district" && <SortableTable cols={wowDistrictCols()} rows={filteredDistrict} emptyMsg="No district data"/>}
         </div>
       </div>
     </div>
