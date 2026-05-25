@@ -11,35 +11,34 @@ export function StatCard({ label, curr, prev, trend, format, accent }) {
   const color = accentColors[accent] || "#5b2d8e";
   const isPos = trend >= 0;
   const trendColor = isPos ? "#16a34a" : "#dc2626";
-  const trendLabel = trend == null ? null :
+  const trendVal = trend == null ? null :
     `${isPos ? "+" : ""}${(trend * 100).toFixed(1)}%`;
 
   return (
     <div style={{
       background:"#fff", borderRadius:14, border:"1px solid #e9eaf0",
-      padding:"16px 20px", flex:"1", minWidth:160,
+      padding:"14px 18px", flex:"1", minWidth:140,
       borderTop:`3px solid ${color}`,
     }}>
-      <div style={{ fontSize:11, fontWeight:700, color:"#9ca3af", letterSpacing:.8, textTransform:"uppercase", marginBottom:8 }}>
+      <div style={{ fontSize:10, fontWeight:700, color:"#9ca3af", letterSpacing:.8, textTransform:"uppercase", marginBottom:6 }}>
         {label}
       </div>
-      <div style={{ fontSize:26, fontWeight:800, color, lineHeight:1, marginBottom:4 }}>
+      <div style={{ fontSize:24, fontWeight:800, color, lineHeight:1.1, marginBottom:3 }}>
         {format ? format(curr) : curr}
       </div>
       {prev != null && (
-        <div style={{ fontSize:12, color:"#9ca3af", marginBottom:4 }}>
+        <div style={{ fontSize:11, color:"#9ca3af", marginBottom:2 }}>
           prev: {format ? format(prev) : prev}
         </div>
       )}
-      {trendLabel && (
-        <div style={{ fontSize:12, fontWeight:700, color:trendColor }}>
-          Trend: {trendLabel}
+      {trendVal && (
+        <div style={{ fontSize:11, color:"#6b7280" }}>
+          Trend: <span style={{ fontWeight:700, color:trendColor }}>{trendVal}</span>
         </div>
       )}
     </div>
   );
-}
-export function PageHeader({ title, sub, extra }) {
+}export function PageHeader({ title, sub, extra }) {
   return (
     <div style={{
       background:`linear-gradient(135deg,${PURPLE},#7c3aed)`,
