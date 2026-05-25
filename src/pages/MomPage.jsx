@@ -135,36 +135,72 @@ function SortableTable({ cols, rows, emptyMsg }) {
   if (!rows.length) return <div style={{padding:"40px",textAlign:"center",color:"#9ca3af",fontSize:13}}>{emptyMsg}</div>;
   
   return (
-    <div style={{overflowX:"auto"}}>
-      <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+    <div style={{ overflowX: "auto", maxWidth: "100%" }}>
+      <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: 0, fontSize: 12 }}>
         <thead>
-          <tr style={{borderBottom:"2px solid #f3f4f6",background:"#fafafa"}}>
-            {cols.map(c => (
-              <th key={c.key} onClick={() => handleSort(c.sortKey||c.key)} style={{
-                padding:"12px 12px", textAlign:"left", fontWeight:700, color:PURPLE,
-                fontSize:11, letterSpacing:.5, textTransform:"uppercase",
-                cursor:"pointer", userSelect:"none", whiteSpace:"nowrap",
-              }}>
-                {c.label}{arrow(c.sortKey||c.key)}
-              </th>
-            ))}
+          <tr style={{ background: "#fafafa" }}>
+            {cols.map((c) => {
+              // Build standard column style combined with sticky properties if frozen
+              const headerStyle = {
+                padding: "12px 12px",
+                textAlign: "left",
+                fontWeight: 700,
+                color: PURPLE,
+                fontSize: 11,
+                letterSpacing: 0.5,
+                textTransform: "uppercase",
+                cursor: "pointer",
+                userSelect: "none",
+                whiteSpace: "nowrap",
+                borderBottom: "2px solid #f3f4f6",
+                background: "#fafafa",
+                zIndex: c.sticky ? 20 : 1,
+                ...(c.sticky && {
+                  position: "sticky",
+                  left: c.leftOffset || 0,
+                  boxShadow: c.lastSticky ? "4px 0 8px -4px rgba(0,0,0,0.12), inset 0 -2px 0 #f3f4f6" : "none"
+                })
+              };
+
+              return (
+                <th key={c.key} onClick={() => handleSort(c.sortKey || c.key)} style={headerStyle}>
+                  {c.label}{arrow(c.sortKey || c.key)}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>
-          {sorted.map((row, i) => (
-            <tr key={i} style={{borderBottom:"1px solid #f9fafb", background:i%2===0?"#fff":"#fdfcff"}}>
-              {cols.map(c => (
-                <td key={c.key} style={{
-                  // Increased vertical padding to 14px to prevent dashboard congestion
-                  padding:"14px 12px", whiteSpace:"nowrap", verticalAlign:"top",
-                  color: c.muted?"#9ca3af":c.bold?"#111827":"#374151",
-                  fontWeight: c.bold?600:400,
-                }}>
-                  {c.render ? c.render(row) : row[c.key] ?? "—"}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {sorted.map((row, i) => {
+            const rowBg = i % 2 === 0 ? "#fff" : "#fdfcff";
+            return (
+              <tr key={i} style={{ background: rowBg }}>
+                {cols.map((c) => {
+                  const cellStyle = {
+                    padding: "14px 12px",
+                    whiteSpace: "nowrap",
+                    verticalAlign: "top",
+                    color: c.muted ? "#9ca3af" : c.bold ? "#111827" : "#374151",
+                    fontWeight: c.bold ? 600 : 400,
+                    borderBottom: "1px solid #f9fafb",
+                    background: c.sticky ? rowBg : "transparent",
+                    zIndex: c.sticky ? 10 : 1,
+                    ...(c.sticky && {
+                      position: "sticky",
+                      left: c.leftOffset || 0,
+                      boxShadow: c.lastSticky ? "4px 0 8px -4px rgba(0,0,0,0.12)" : "none"
+                    })
+                  };
+
+                  return (
+                    <td key={c.key} style={cellStyle}>
+                      {c.render ? c.render(row) : row[c.key] ?? "—"}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -173,10 +209,10 @@ function SortableTable({ cols, rows, emptyMsg }) {
 
 function momStoreCols() {
   return [
-    { key:"doorCode",  sortKey:"doorCode",     label:"Door",        muted:true },
-    { key:"market",    sortKey:"market",        label:"Market",      muted:true },
-    { key:"storeName", sortKey:"storeName",     label:"Store",       bold:true },
-    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true },
+    { key:"doorCode",  sortKey:"doorCode",     label:"Door",        muted:true, sticky: true, leftOffset: 0 },
+    { key:"market",    sortKey:"market",        label:"Market",      muted:true, sticky: true, leftOffset: 80 },
+    { key:"storeName", sortKey:"storeName",     label:"Store",       bold:true,  sticky: true, leftOffset: 170 },
+    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky: true, leftOffset: 330, lastSticky: true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><CustomTrendCell curr={r.ppd_curr} prev={r.ppd_prev} mtd={r.ppd_mtd} pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><CustomTrendCell curr={r.acc_curr} prev={r.acc_prev} mtd={r.acc_mtd} pct={r.acc_pct} format={fmtDollar}/> },
     { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><CustomTrendCell curr={r.apo_curr} prev={r.apo_prev} mtd={r.apo_mtd} pct={r.apo_pct} format={v=>fmtNum(v,0)}/> },
@@ -200,8 +236,8 @@ function momStoreCols() {
 
 function momMarketCols() {
   return [
-    { key:"market",    sortKey:"market",        label:"Market",      bold:true },
-    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true },
+    { key:"market",    sortKey:"market",        label:"Market",      bold:true,  sticky: true, leftOffset: 0 },
+    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky: true, leftOffset: 120, lastSticky: true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><CustomTrendCell curr={r.ppd_curr} prev={r.ppd_prev} mtd={r.ppd_mtd} pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><CustomTrendCell curr={r.acc_curr} prev={r.acc_prev} mtd={r.acc_mtd} pct={r.acc_pct} format={fmtDollar}/> },
     { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><CustomTrendCell curr={r.apo_curr} prev={r.apo_prev} mtd={r.apo_mtd} pct={r.apo_pct} format={v=>fmtNum(v,0)}/> },
@@ -225,9 +261,9 @@ function momMarketCols() {
 
 function momDistrictCols() {
   return [
-    { key:"market",    sortKey:"market",        label:"Market",      bold:true },
-    { key:"mm",        sortKey:"mm",            label:"MM",          muted:true },
-    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true },
+    { key:"market",    sortKey:"market",        label:"Market",      bold:true,  sticky: true, leftOffset: 0 },
+    { key:"mm",        sortKey:"mm",            label:"MM",          muted:true, sticky: true, leftOffset: 120 },
+    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky: true, leftOffset: 240, lastSticky: true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><CustomTrendCell curr={r.ppd_curr} prev={r.ppd_prev} mtd={r.ppd_mtd} pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Acc",         render:r=><CustomTrendCell curr={r.acc_curr} prev={r.acc_prev} mtd={r.acc_mtd} pct={r.acc_pct} format={fmtDollar}/> },
     { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><CustomTrendCell curr={r.apo_curr} prev={r.apo_prev} mtd={r.apo_mtd} pct={r.apo_pct} format={v=>fmtNum(v,0)}/> },
