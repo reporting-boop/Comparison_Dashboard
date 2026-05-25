@@ -135,7 +135,7 @@ function momStoreCols() {
     { key:"market",    sortKey:"market",        label:"Market",      muted:true },
     { key:"storeName", sortKey:"storeName",     label:"Store",       bold:true },
     { key:"dm",        sortKey:"dm",            label:"DM",          muted:true },
-    { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr} prev={r.ppd_prev} pct={r.ppd_pct}/> },
+    { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr} prev={r.ppd_prev} mtd={r.ppd_mtd} pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><TrendCell curr={r.acc_curr} prev={r.acc_prev} pct={r.acc_pct} format={fmtDollar}/> },
     { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><TrendCell curr={r.apo_curr} prev={r.apo_prev} pct={r.apo_pct} format={v=>fmtNum(v,0)}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr} prev={r.voice_prev} pct={r.voice_pct}/> },
