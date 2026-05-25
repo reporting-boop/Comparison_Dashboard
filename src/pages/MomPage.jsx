@@ -157,7 +157,7 @@ function momMarketCols() {
     { key:"dm",        sortKey:"dm",            label:"DM",          muted:true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr} prev={r.ppd_prev} pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><TrendCell curr={r.acc_curr} prev={r.acc_prev} pct={r.acc_pct} format={fmtDollar}/> },
-    { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><TrendCell curr={r.apo_curr} prev={r.apo_prev} pct={r.apo_pct} format={v=>fmtNum(v,1)}/> },
+    { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><TrendCell curr={r.apo_curr} prev={r.apo_prev} pct={r.apo_pct} format={v=>fmtNum(v,0)}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr} prev={r.voice_prev} pct={r.voice_pct}/> },
     { key:"bts",       sortKey:"bts_curr",      label:"BTS",         render:r=><TrendCell curr={r.bts_curr} prev={r.bts_prev} pct={r.bts_pct}/> },
     { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><TrendCell curr={r.hint_curr} prev={r.hint_prev} pct={r.hint_pct}/> },
@@ -175,7 +175,7 @@ function momDistrictCols() {
     { key:"dm",        sortKey:"dm",            label:"DM",          muted:true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr} prev={r.ppd_prev} pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Acc",         render:r=><TrendCell curr={r.acc_curr} prev={r.acc_prev} pct={r.acc_pct} format={fmtDollar}/> },
-    { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><TrendCell curr={r.apo_curr} prev={r.apo_prev} pct={r.apo_pct} format={v=>fmtNum(v,1)}/> },
+    { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><TrendCell curr={r.apo_curr} prev={r.apo_prev} pct={r.apo_pct} format={v=>fmtNum(v,0)}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr} prev={r.voice_prev} pct={r.voice_pct}/> },
     { key:"bts",       sortKey:"bts_curr",      label:"BTS",         render:r=><TrendCell curr={r.bts_curr} prev={r.bts_prev} pct={r.bts_pct}/> },
     { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><TrendCell curr={r.hint_curr} prev={r.hint_prev} pct={r.hint_pct}/> },
@@ -295,7 +295,7 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
 <div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap"}}>
   <StatCard label="Total PPD"      curr={stats.ppdCurr}      prev={stats.ppdPrev}      trend={stats.ppdTrend}      format={fmtNum}           accent="pink"/>
   <StatCard label="Total ACC"      curr={stats.accCurr}      prev={stats.accPrev}      trend={stats.accTrend}      format={fmtDollar}         accent="purple"/>
-  <StatCard label="Avg APO"        curr={stats.apoCurr}      prev={stats.apoPrev}      trend={stats.apoTrend}      format={v=>fmtNum(v,1)}    accent="blue"/>
+  <StatCard label="Avg APO"        curr={stats.apoCurr}      prev={stats.apoPrev}      trend={stats.apoTrend}      format={v=>fmtNum(v,0)}    accent="blue"/>
   <StatCard label="Total Voice"    curr={stats.voiceCurr}    prev={stats.voicePrev}    trend={stats.voiceTrend}    format={fmtNum}            accent="amber"/>
   <StatCard label="Total BTS"      curr={stats.btsCurr}      prev={stats.btsPrev}      trend={stats.btsTrend}      format={fmtNum}            accent="purple"/>
   <StatCard label="Total Hint"     curr={stats.hintCurr}     prev={stats.hintPrev}     trend={stats.hintTrend}     format={fmtNum}            accent="pink"/>
