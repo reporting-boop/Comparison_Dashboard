@@ -4,25 +4,32 @@ import {
   ResponsiveContainer, Cell, Legend
 } from "recharts";
 import { fmtNum, fmtDollar, fmtRetention } from "../data";
-import { StatCard, PageHeader, PctBadge, TrendCell, RetentionBar } from "../components/UI";
+import { StatCard, PageHeader, PctBadge, RetentionBar } from "../components/UI";
 
 const PURPLE = "#5b2d8e";
 const PINK   = "#e6007e";
 const COLORS = [PURPLE,"#7c3aed","#9333ea","#a855f7","#c026d3",PINK,"#db2777","#be185d","#065f46","#0e7490"];
 
-// Custom helper wrapper to reliably print MTD data values safely right next to prev value
+// Custom helper layout optimized for stacked three-row metrics safely
 function CustomTrendCell({ curr, prev, mtd, pct, format = fmtNum }) {
   return (
-    <div>
-      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <span style={{ fontWeight: 600, color: "#111827" }}>{format(curr)}</span>
-        <PctBadge value={pct} />
+    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      {/* Line 1: Current Value */}
+      <div style={{ fontWeight: 600, color: "#111827", fontSize: 13 }}>
+        {format(curr)}
       </div>
-      <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 2 }}>
+      
+      {/* Line 2: Sub-labels with exact same font styling */}
+      <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 400 }}>
         <span>prev: {format(prev)}</span>
         {mtd !== undefined && mtd !== null && (
-          <span style={{ color: "#6b7280", marginLeft: 4 }}>| MTD: {format(mtd)}</span>
+          <span> | mtd: {format(mtd)}</span>
         )}
+      </div>
+
+      {/* Line 3: Trend badge placed cleanly underneath */}
+      <div style={{ marginTop: 1 }}>
+        <PctBadge value={pct} />
       </div>
     </div>
   );
@@ -134,7 +141,7 @@ function SortableTable({ cols, rows, emptyMsg }) {
           <tr style={{borderBottom:"2px solid #f3f4f6",background:"#fafafa"}}>
             {cols.map(c => (
               <th key={c.key} onClick={() => handleSort(c.sortKey||c.key)} style={{
-                padding:"10px 12px", textAlign:"left", fontWeight:700, color:PURPLE,
+                padding:"12px 12px", textAlign:"left", fontWeight:700, color:PURPLE,
                 fontSize:11, letterSpacing:.5, textTransform:"uppercase",
                 cursor:"pointer", userSelect:"none", whiteSpace:"nowrap",
               }}>
@@ -148,7 +155,8 @@ function SortableTable({ cols, rows, emptyMsg }) {
             <tr key={i} style={{borderBottom:"1px solid #f9fafb", background:i%2===0?"#fff":"#fdfcff"}}>
               {cols.map(c => (
                 <td key={c.key} style={{
-                  padding:"10px 12px", whiteSpace:"nowrap",
+                  // Increased vertical padding to 14px to prevent dashboard congestion
+                  padding:"14px 12px", whiteSpace:"nowrap", verticalAlign:"top",
                   color: c.muted?"#9ca3af":c.bold?"#111827":"#374151",
                   fontWeight: c.bold?600:400,
                 }}>
@@ -177,10 +185,12 @@ function momStoreCols() {
     { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><CustomTrendCell curr={r.hint_curr} prev={r.hint_prev} mtd={r.hint_mtd} pct={r.hint_pct}/> },
     { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><CustomTrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} mtd={r.upgrades_mtd} pct={r.upgrades_pct}/> },
     { key:"retention", sortKey:"ret_curr",      label:"Retention",   render:r=>(
-      <div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
         <RetentionBar value={r.ret_curr}/>
-        <div style={{fontSize:10,color:"#9ca3af",marginTop:2,display:"flex",gap:4,alignItems:"center"}}>
-          <span>prev: {fmtRetention(r.ret_prev)} {r.ret_mtd !== undefined && r.ret_mtd !== null && `| MTD: ${fmtRetention(r.ret_mtd)}`}</span>
+        <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 400 }}>
+          <span>prev: {fmtRetention(r.ret_prev)} {r.ret_mtd !== undefined && r.ret_mtd !== null && ` | mtd: ${fmtRetention(r.ret_mtd)}`}</span>
+        </div>
+        <div style={{ marginTop: 1 }}>
           <PctBadge value={r.ret_pct}/>
         </div>
       </div>
@@ -200,10 +210,13 @@ function momMarketCols() {
     { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><CustomTrendCell curr={r.hint_curr} prev={r.hint_prev} mtd={r.hint_mtd} pct={r.hint_pct}/> },
     { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><CustomTrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} mtd={r.upgrades_mtd} pct={r.upgrades_pct}/> },
     { key:"retention", sortKey:"ret_curr",      label:"Retention",   render:r=>(
-      <div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
         <RetentionBar value={r.ret_curr}/>
-        <div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>
-          prev: {fmtRetention(r.ret_prev)} {r.ret_mtd !== undefined && r.ret_mtd !== null && `| MTD: ${fmtRetention(r.ret_mtd)}`}
+        <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 400 }}>
+          <span>prev: {fmtRetention(r.ret_prev)} {r.ret_mtd !== undefined && r.ret_mtd !== null && ` | mtd: ${fmtRetention(r.ret_mtd)}`}</span>
+        </div>
+        <div style={{ marginTop: 1 }}>
+          <PctBadge value={r.ret_pct}/>
         </div>
       </div>
     )},
@@ -223,10 +236,13 @@ function momDistrictCols() {
     { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><CustomTrendCell curr={r.hint_curr} prev={r.hint_prev} mtd={r.hint_mtd} pct={r.hint_pct}/> },
     { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><CustomTrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} mtd={r.upgrades_mtd} pct={r.upgrades_pct}/> },
     { key:"retention", sortKey:"ret_curr",      label:"Retention",   render:r=>(
-      <div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
         <RetentionBar value={r.ret_curr}/>
-        <div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>
-          prev: {fmtRetention(r.ret_prev)} {r.ret_mtd !== undefined && r.ret_mtd !== null && `| MTD: ${fmtRetention(r.ret_mtd)}`}
+        <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 400 }}>
+          <span>prev: {fmtRetention(r.ret_prev)} {r.ret_mtd !== undefined && r.ret_mtd !== null && ` | mtd: ${fmtRetention(r.ret_mtd)}`}</span>
+        </div>
+        <div style={{ marginTop: 1 }}>
+          <PctBadge value={r.ret_pct}/>
         </div>
       </div>
     )},
@@ -424,7 +440,7 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
             <div style={{fontWeight:600,color:PURPLE,fontSize:14}}>
               {tab==="store"?`Store Level · ${filteredStores.length} stores`:tab==="market"?`Market Wise · ${filteredMarket.length} markets`:`District Wise · ${filteredDistrict.length} districts`}
             </div>
-            <div style={{fontSize:11,color:"#9ca3af"}}>Current ↕ prev | MTD · % change</div>
+            <div style={{fontSize:11,color:"#9ca3af"}}>Current ↕ Details</div>
           </div>
           {tab==="store"    && <SortableTable cols={momStoreCols()}    rows={filteredStores}   emptyMsg="No store data"/>}
           {tab==="market"   && <SortableTable cols={momMarketCols()}   rows={filteredMarket}   emptyMsg="No market data"/>}
