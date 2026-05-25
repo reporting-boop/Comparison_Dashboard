@@ -189,7 +189,6 @@ function calcStats(rows) {
   const sum = fn => rows.reduce((s,r) => s+(fn(r)||0), 0);
   const avg = fn => sum(fn)/rows.length;
   return {
-    stores:       rows.length,
     ppdCurr:      sum(r => r.ppd_curr),
     ppdPrev:      sum(r => r.ppd_prev),
     ppdTrend:     avg(r => r.ppd_pct),
@@ -202,12 +201,20 @@ function calcStats(rows) {
     voiceCurr:    sum(r => r.voice_curr),
     voicePrev:    sum(r => r.voice_prev),
     voiceTrend:   avg(r => r.voice_pct),
+    btsCurr:      sum(r => r.bts_curr),
+    btsPrev:      sum(r => r.bts_prev),
+    btsTrend:     avg(r => r.bts_pct),
+    hintCurr:     sum(r => r.hint_curr),
+    hintPrev:     sum(r => r.hint_prev),
+    hintTrend:    avg(r => r.hint_pct),
+    upgradesCurr: sum(r => r.upgrades_curr),
+    upgradesPrev: sum(r => r.upgrades_prev),
+    upgradesTrend:avg(r => r.upgrades_pct),
     retCurr:      avg(r => r.ret_curr),
     retPrev:      avg(r => r.ret_prev),
     retTrend:     avg(r => r.ret_pct),
   };
 }
-
 export default function MomPage({ storeData, marketData, districtData, user }) {
   const [tab,     setTab]     = useState("store");
   const [markets, setMarkets] = useState([]);
@@ -284,33 +291,17 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
 
       <div style={{padding:"20px 28px"}}>
 
-        {/* STAT CARDS */}
-        <div style={{display:"flex",gap:12,marginBottom:20,flexWrap:"wrap"}}>
-          <StatCard label="Stores" curr={stats.stores||0} format={v=>v} accent="purple"
-            sub="Filtered"
-          />
-          <StatCard label="Total PPD"
-            curr={stats.ppdCurr} prev={stats.ppdPrev} trend={stats.ppdTrend}
-            format={fmtNum} accent="pink"
-          />
-          <StatCard label="Total ACC"
-            curr={stats.accCurr} prev={stats.accPrev} trend={stats.accTrend}
-            format={fmtDollar} accent="purple"
-          />
-          <StatCard label="Avg APO"
-            curr={stats.apoCurr} prev={stats.apoPrev} trend={stats.apoTrend}
-            format={v=>fmtNum(v,1)} accent="blue"
-          />
-          <StatCard label="Avg Retention"
-            curr={stats.retCurr} prev={stats.retPrev} trend={stats.retTrend}
-            format={fmtRetention} accent={stats.retTrend>=0?"green":"red"}
-          />
-          <StatCard label="Total Voice"
-            curr={stats.voiceCurr} prev={stats.voicePrev} trend={stats.voiceTrend}
-            format={fmtNum} accent="amber"
-          />
-        </div>
-
+       {/* STAT CARDS */}
+<div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap"}}>
+  <StatCard label="Total PPD"      curr={stats.ppdCurr}      prev={stats.ppdPrev}      trend={stats.ppdTrend}      format={fmtNum}           accent="pink"/>
+  <StatCard label="Total ACC"      curr={stats.accCurr}      prev={stats.accPrev}      trend={stats.accTrend}      format={fmtDollar}         accent="purple"/>
+  <StatCard label="Avg APO"        curr={stats.apoCurr}      prev={stats.apoPrev}      trend={stats.apoTrend}      format={v=>fmtNum(v,1)}    accent="blue"/>
+  <StatCard label="Total Voice"    curr={stats.voiceCurr}    prev={stats.voicePrev}    trend={stats.voiceTrend}    format={fmtNum}            accent="amber"/>
+  <StatCard label="Total BTS"      curr={stats.btsCurr}      prev={stats.btsPrev}      trend={stats.btsTrend}      format={fmtNum}            accent="purple"/>
+  <StatCard label="Total Hint"     curr={stats.hintCurr}     prev={stats.hintPrev}     trend={stats.hintTrend}     format={fmtNum}            accent="pink"/>
+  <StatCard label="Total Upgrades" curr={stats.upgradesCurr} prev={stats.upgradesPrev} trend={stats.upgradesTrend} format={fmtNum}            accent="blue"/>
+  <StatCard label="Avg Retention"  curr={stats.retCurr}      prev={stats.retPrev}      trend={stats.retTrend}      format={fmtRetention}      accent={stats.retTrend>=0?"green":"red"}/>
+</div>
         {/* WIN/LOSE */}
         <div style={{background:"#fff",borderRadius:14,border:"1px solid #e9eaf0",padding:"16px 18px",marginBottom:20}}>
           <div style={{fontWeight:600,color:PURPLE,fontSize:13,marginBottom:12}}>Store Performance vs Previous Month</div>
