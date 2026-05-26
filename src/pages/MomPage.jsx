@@ -275,7 +275,7 @@ function momDistrictCols() {
       <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
         <RetentionBar value={r.ret_curr}/>
         <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 400 }}>
-          <span>prev: {fmtRetention(r.ret_prev)} {r.ret_mtd !== undefined && r.ret_mtd !== null && ` | mtd: ${fmtRetention(r.ret_mtd)}`}</span>
+         <span>Prev: {fmtRetention(r.ret_prev)} {r.ret_mtd !== undefined && r.ret_mtd !== null && ` | MTD: ${fmtRetention(r.ret_mtd)}`}</span>
         </div>
         <div style={{ marginTop: 1 }}>
           <PctBadge value={r.ret_pct}/>
