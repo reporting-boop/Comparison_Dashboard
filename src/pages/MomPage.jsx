@@ -236,8 +236,8 @@ function calcStats(rows) {
   const ppdPrev      = sum(r => r.ppd_prev);
   const accCurr      = sum(r => r.acc_curr);
   const accPrev      = sum(r => r.acc_prev);
-  const apoCurr      = avg(r => r.apo_curr);
-  const apoPrev      = avg(r => r.apo_prev);
+  const apoCurr      = sum(r => r.apo_curr);
+  const apoPrev      = sum(r => r.apo_prev);
   const voiceCurr    = sum(r => r.voice_curr);
   const voicePrev    = sum(r => r.voice_prev);
   const btsCurr      = sum(r => r.bts_curr);
