@@ -232,13 +232,13 @@ function calcStats(rows) {
   const sum = fn => rows.reduce((s,r) => s+(fn(r)||0), 0);
   const avg = fn => sum(fn)/rows.length;
 
-  const ppdCurr      = sum(r => r.ppd_mtd  || r.ppd_curr);
+  const ppdCurr      = sum(r => r.ppd_curr);
   const ppdPrev      = sum(r => r.ppd_prev);
-  const accCurr      = sum(r => r.acc_mtd  || r.acc_curr);
+  const accCurr      = sum(r => r.acc_curr);
   const accPrev      = sum(r => r.acc_prev);
   const apoCurr      = avg(r => r.apo_curr);
   const apoPrev      = avg(r => r.apo_prev);
-  const voiceCurr    = sum(r => r.voice_mtd || r.voice_curr);
+  const voiceCurr    = sum(r => r.voice_curr);
   const voicePrev    = sum(r => r.voice_prev);
   const btsCurr      = sum(r => r.bts_curr);
   const btsPrev      = sum(r => r.bts_prev);
