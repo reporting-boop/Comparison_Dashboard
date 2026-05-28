@@ -71,22 +71,13 @@ function SortableTable({ cols, rows, emptyMsg }) {
           <tr style={{background:"#fafafa"}}>
             {cols.map(c=>{
               const headerStyle = {
-                padding:"12px 12px",
-                textAlign:"left",
-                fontWeight:700,
-                color:PURPLE,
-                fontSize:11,
-                letterSpacing:.5,
-                textTransform:"uppercase",
-                cursor:"pointer",
-                userSelect:"none",
-                whiteSpace:"nowrap",
-                borderBottom:"2px solid #f3f4f6",
-                background:"#fafafa",
+                padding:"12px 12px", textAlign:"left", fontWeight:700, color:PURPLE,
+                fontSize:11, letterSpacing:.5, textTransform:"uppercase",
+                cursor:"pointer", userSelect:"none", whiteSpace:"nowrap",
+                borderBottom:"2px solid #f3f4f6", background:"#fafafa",
                 zIndex: c.sticky ? 20 : 1,
                 ...(c.sticky && {
-                  position: "sticky",
-                  left: c.leftOffset || 0,
+                  position:"sticky", left:c.leftOffset||0,
                   boxShadow: c.lastSticky ? "4px 0 8px -4px rgba(0,0,0,0.12), inset 0 -2px 0 #f3f4f6" : "none"
                 })
               };
@@ -105,17 +96,14 @@ function SortableTable({ cols, rows, emptyMsg }) {
               <tr key={i} style={{background:rowBg}}>
                 {cols.map(c=>{
                   const cellStyle = {
-                    padding:"14px 12px",
-                    whiteSpace:"nowrap",
-                    verticalAlign:"top",
+                    padding:"14px 12px", whiteSpace:"nowrap", verticalAlign:"top",
                     color:c.muted?"#9ca3af":c.bold?"#111827":"#374151",
                     fontWeight:c.bold?600:400,
                     borderBottom:"1px solid #f9fafb",
                     background: c.sticky ? rowBg : "transparent",
                     zIndex: c.sticky ? 10 : 1,
                     ...(c.sticky && {
-                      position: "sticky",
-                      left: c.leftOffset || 0,
+                      position:"sticky", left:c.leftOffset||0,
                       boxShadow: c.lastSticky ? "4px 0 8px -4px rgba(0,0,0,0.12)" : "none"
                     })
                   };
@@ -136,10 +124,10 @@ function SortableTable({ cols, rows, emptyMsg }) {
 
 function wowStoreCols() {
   return [
-    { key:"doorCode",  sortKey:"doorCode",     label:"Door",        muted:true, sticky: true, leftOffset: 0 },
-    { key:"market",    sortKey:"market",        label:"Market",      muted:true, sticky: true, leftOffset: 80 },
-    { key:"storeName", sortKey:"storeName",     label:"Store",       bold:true,  sticky: true, leftOffset: 170 },
-    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky: true, leftOffset: 330, lastSticky: true },
+    { key:"doorCode",  sortKey:"doorCode",     label:"Door",        muted:true, sticky:true, leftOffset:0 },
+    { key:"market",    sortKey:"market",        label:"Market",      muted:true, sticky:true, leftOffset:80 },
+    { key:"storeName", sortKey:"storeName",     label:"Store",       bold:true,  sticky:true, leftOffset:170 },
+    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky:true, leftOffset:330, lastSticky:true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr}      prev={r.ppd_prev}      pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><TrendCell curr={r.acc_curr}      prev={r.acc_prev}      pct={r.acc_pct} format={fmtDollar}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr}    prev={r.voice_prev}    pct={r.voice_pct}/> },
@@ -154,8 +142,8 @@ function wowStoreCols() {
 
 function wowMarketCols() {
   return [
-    { key:"market",    sortKey:"market",        label:"Market",      bold:true,  sticky: true, leftOffset: 0 },
-    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky: true, leftOffset: 120, lastSticky: true },
+    { key:"market",    sortKey:"market",        label:"Market",      bold:true,  sticky:true, leftOffset:0 },
+    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky:true, leftOffset:120, lastSticky:true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr}      prev={r.ppd_prev}      pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><TrendCell curr={r.acc_curr}      prev={r.acc_prev}      pct={r.acc_pct} format={fmtDollar}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr}    prev={r.voice_prev}    pct={r.voice_pct}/> },
@@ -168,9 +156,9 @@ function wowMarketCols() {
 
 function wowDistrictCols() {
   return [
-    { key:"market",    sortKey:"market",        label:"Market",      bold:true,  sticky: true, leftOffset: 0 },
-    { key:"mm",        sortKey:"mm",            label:"MM",          muted:true, sticky: true, leftOffset: 120 },
-    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky: true, leftOffset: 240, lastSticky: true },
+    { key:"market",    sortKey:"market",        label:"Market",      bold:true,  sticky:true, leftOffset:0 },
+    { key:"mm",        sortKey:"mm",            label:"MM",          muted:true, sticky:true, leftOffset:120 },
+    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky:true, leftOffset:240, lastSticky:true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr}      prev={r.ppd_prev}      pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Acc",         render:r=><TrendCell curr={r.acc_curr}      prev={r.acc_prev}      pct={r.acc_pct} format={fmtDollar}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr}    prev={r.voice_prev}    pct={r.voice_pct}/> },
@@ -181,32 +169,40 @@ function wowDistrictCols() {
   ];
 }
 
+// growth % = (curr - prev) / prev
+function growth(curr, prev) {
+  if (!prev) return null;
+  return (curr - prev) / prev;
+}
+
 function calcStats(rows) {
   if (!rows.length) return {};
   const sum = fn => rows.reduce((s,r) => s+(fn(r)||0), 0);
   const avg = fn => sum(fn)/rows.length;
+
+  const ppdCurr      = sum(r => r.ppd_curr);
+  const ppdPrev      = sum(r => r.ppd_prev);
+  const accCurr      = sum(r => r.acc_curr);
+  const accPrev      = sum(r => r.acc_prev);
+  const voiceCurr    = sum(r => r.voice_curr);
+  const voicePrev    = sum(r => r.voice_prev);
+  const btsCurr      = sum(r => r.bts_curr);
+  const btsPrev      = sum(r => r.bts_prev);
+  const hintCurr     = sum(r => r.hint_curr);
+  const hintPrev     = sum(r => r.hint_prev);
+  const upgradesCurr = sum(r => r.upgrades_curr);
+  const upgradesPrev = sum(r => r.upgrades_prev);
+  const retCurr      = avg(r => r.ret_curr);
+  const retPrev      = avg(r => r.ret_prev);
+
   return {
-    ppdCurr:      sum(r => r.ppd_curr),
-    ppdPrev:      sum(r => r.ppd_prev),
-    ppdTrend:     avg(r => r.ppd_pct),
-    accCurr:      sum(r => r.acc_curr),
-    accPrev:      sum(r => r.acc_prev),
-    accTrend:     avg(r => r.acc_pct),
-    voiceCurr:    sum(r => r.voice_curr),
-    voicePrev:    sum(r => r.voice_prev),
-    voiceTrend:   avg(r => r.voice_pct),
-    btsCurr:      sum(r => r.bts_curr),
-    btsPrev:      sum(r => r.bts_prev),
-    btsTrend:     avg(r => r.bts_pct),
-    hintCurr:     sum(r => r.hint_curr),
-    hintPrev:     sum(r => r.hint_prev),
-    hintTrend:    avg(r => r.hint_pct),
-    upgradesCurr: sum(r => r.upgrades_curr),
-    upgradesPrev: sum(r => r.upgrades_prev),
-    upgradesTrend:avg(r => r.upgrades_pct),
-    retCurr:      avg(r => r.ret_curr),
-    retPrev:      avg(r => r.ret_prev),
-    retTrend:     avg(r => r.ret_pct),
+    ppdCurr,      ppdPrev,      ppdTrend:      growth(ppdCurr, ppdPrev),
+    accCurr,      accPrev,      accTrend:      growth(accCurr, accPrev),
+    voiceCurr,    voicePrev,    voiceTrend:    growth(voiceCurr, voicePrev),
+    btsCurr,      btsPrev,      btsTrend:      growth(btsCurr, btsPrev),
+    hintCurr,     hintPrev,     hintTrend:     growth(hintCurr, hintPrev),
+    upgradesCurr, upgradesPrev, upgradesTrend: growth(upgradesCurr, upgradesPrev),
+    retCurr,      retPrev,      retTrend:      growth(retCurr, retPrev),
   };
 }
 
@@ -243,7 +239,7 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
     const map={};
     filteredStores.forEach(r=>{const k=r.market||"Unknown";if(!map[k])map[k]={name:k,curr:0,prev:0};map[k].curr+=r[mdef.curr]||0;map[k].prev+=r[mdef.prev]||0;});
     return Object.values(map).sort((a,b)=>b.curr-a.curr).slice(0,12);
-  }, [filteredStores,mdef]);
+  },[filteredStores,mdef]);
 
   const filterSelect={padding:"7px 10px",borderRadius:8,border:"1px solid rgba(255,255,255,.2)",fontSize:12,color:"#fff",background:"rgba(255,255,255,.12)",cursor:"pointer"};
   const tabBtn=(id,label)=>{const active=tab===id;return<button onClick={()=>setTab(id)} style={{padding:"7px 18px",borderRadius:7,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:active?"#fff":"transparent",color:active?PURPLE:"rgba(255,255,255,.5)"}}>{label}</button>;};
@@ -266,13 +262,13 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
 
         {/* STAT CARDS */}
         <div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap"}}>
-          <StatCard label="Total PPD"      curr={stats.ppdCurr}      prev={stats.ppdPrev}      trend={stats.ppdTrend}      format={fmtNum}           accent="pink"/>
-          <StatCard label="Total ACC"      curr={stats.accCurr}      prev={stats.accPrev}      trend={stats.accTrend}      format={fmtDollar}         accent="purple"/>
-          <StatCard label="Total Voice"    curr={stats.voiceCurr}    prev={stats.voicePrev}    trend={stats.voiceTrend}    format={fmtNum}            accent="amber"/>
-          <StatCard label="Total BTS"      curr={stats.btsCurr}      prev={stats.btsPrev}      trend={stats.btsTrend}      format={fmtNum}            accent="purple"/>
-          <StatCard label="Total Hint"     curr={stats.hintCurr}     prev={stats.hintPrev}     trend={stats.hintTrend}     format={fmtNum}            accent="pink"/>
-          <StatCard label="Total Upgrades" curr={stats.upgradesCurr} prev={stats.upgradesPrev} trend={stats.upgradesTrend} format={fmtNum}            accent="blue"/>
-          <StatCard label="Avg Retention"  curr={stats.retCurr}      prev={stats.retPrev}      trend={stats.retTrend}      format={fmtRetention}      accent={stats.retTrend>=0?"green":"red"}/>
+          <StatCard label="Total PPD"      curr={stats.ppdCurr}      prev={stats.ppdPrev}      trend={stats.ppdTrend}      format={fmtNum}       accent="pink"/>
+          <StatCard label="Total ACC"      curr={stats.accCurr}      prev={stats.accPrev}      trend={stats.accTrend}      format={fmtDollar}     accent="purple"/>
+          <StatCard label="Total Voice"    curr={stats.voiceCurr}    prev={stats.voicePrev}    trend={stats.voiceTrend}    format={fmtNum}        accent="amber"/>
+          <StatCard label="Total BTS"      curr={stats.btsCurr}      prev={stats.btsPrev}      trend={stats.btsTrend}      format={fmtNum}        accent="purple"/>
+          <StatCard label="Total Hint"     curr={stats.hintCurr}     prev={stats.hintPrev}     trend={stats.hintTrend}     format={fmtNum}        accent="pink"/>
+          <StatCard label="Total Upgrades" curr={stats.upgradesCurr} prev={stats.upgradesPrev} trend={stats.upgradesTrend} format={fmtNum}        accent="blue"/>
+          <StatCard label="Avg Retention"  curr={stats.retCurr}      prev={stats.retPrev}      trend={stats.retTrend}      format={fmtRetention}  accent={stats.retTrend>=0?"green":"red"}/>
         </div>
 
         {/* WIN/LOSE */}
