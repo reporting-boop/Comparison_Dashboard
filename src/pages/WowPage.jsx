@@ -40,17 +40,114 @@ function MultiSelect({ options, selected, onChange, placeholder }) {
   );
 }
 
+// ── Excel-style Column Filter ─────────────────────────────────
+function ColFilter({ values, selected, onChange }) {
+  const [open, setOpen]     = useState(false);
+  const [search, setSearch] = useState("");
+  const ref = useRef();
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const filtered = useMemo(() =>
+    [...new Set(values)].filter(v => v != null && String(v).toLowerCase().includes(search.toLowerCase())).sort()
+  , [values, search]);
+
+  const hasActive = selected.length > 0;
+
+  function toggle(val) {
+    if (selected.includes(val)) onChange(selected.filter(v => v !== val));
+    else onChange([...selected, val]);
+  }
+
+  return (
+    <div ref={ref} style={{ display:"inline-block", position:"relative", marginLeft:3 }}>
+      <span
+        onClick={e => { e.stopPropagation(); setOpen(o=>!o); }}
+        style={{ cursor:"pointer", fontSize:10, color: hasActive ? PINK : "#c4b5d8", fontWeight: hasActive ? 700 : 400, userSelect:"none" }}
+        title="Filter"
+      >▾</span>
+
+      {open && (
+        <div style={{
+          position:"absolute", top:"calc(100% + 4px)", left:0, zIndex:1000,
+          background:"#fff", borderRadius:10, boxShadow:"0 8px 28px rgba(0,0,0,.18)",
+          border:"1px solid #e5e7eb", minWidth:200, maxHeight:300,
+          display:"flex", flexDirection:"column", overflow:"hidden",
+        }}>
+          <div style={{ padding:"8px 10px", borderBottom:"1px solid #f3f4f6" }}>
+            <input
+              autoFocus
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search…"
+              onClick={e => e.stopPropagation()}
+              style={{ width:"100%", boxSizing:"border-box", padding:"5px 8px", borderRadius:6, border:"1px solid #e5e7eb", fontSize:11, outline:"none", color:"#374151" }}
+            />
+          </div>
+          <div style={{ padding:"5px 10px", borderBottom:"1px solid #f3f4f6", display:"flex", gap:8 }}>
+            <span onClick={() => onChange([])} style={{ fontSize:10, color:PURPLE, cursor:"pointer", fontWeight:600 }}>Select All</span>
+            {hasActive && <>
+              <span style={{ color:"#e5e7eb" }}>|</span>
+              <span onClick={() => onChange(filtered)} style={{ fontSize:10, color:PINK, cursor:"pointer", fontWeight:600 }}>Clear</span>
+            </>}
+          </div>
+          <div style={{ overflowY:"auto", maxHeight:200 }}>
+            {filtered.length === 0 && (
+              <div style={{ padding:"12px", textAlign:"center", color:"#9ca3af", fontSize:11 }}>No results</div>
+            )}
+            {filtered.map(val => (
+              <div
+                key={val}
+                onClick={() => toggle(val)}
+                style={{ padding:"7px 12px", fontSize:11, cursor:"pointer", display:"flex", alignItems:"center", gap:8, background: selected.includes(val) ? "#f3e8ff" : "transparent", color: selected.includes(val) ? PURPLE : "#374151" }}
+              >
+                <span style={{ width:13, height:13, borderRadius:3, flexShrink:0, border:`2px solid ${selected.includes(val) ? PURPLE : "#d1d5db"}`, background: selected.includes(val) ? PURPLE : "transparent", display:"inline-flex", alignItems:"center", justifyContent:"center", fontSize:8, color:"#fff" }}>
+                  {selected.includes(val) ? "✓" : ""}
+                </span>
+                {String(val)}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SortableTable({ cols, rows, emptyMsg }) {
-  const [sortKey, setSortKey] = useState(null);
-  const [sortDir, setSortDir] = useState(null);
+  const [sortKey, setSortKey]     = useState(null);
+  const [sortDir, setSortDir]     = useState(null);
+  const [colFilters, setColFilters] = useState({});
+
   function handleSort(key) {
     if(sortKey!==key){setSortKey(key);setSortDir("desc");}
     else if(sortDir==="desc") setSortDir("asc");
     else{setSortKey(null);setSortDir(null);}
   }
+
+  function setFilter(key, vals) {
+    setColFilters(prev => ({ ...prev, [key]: vals }));
+  }
+
+  const filtered = useMemo(() => {
+    let d = rows;
+    Object.entries(colFilters).forEach(([key, vals]) => {
+      if (vals && vals.length > 0) {
+        d = d.filter(r => vals.includes(String(r[key] ?? "")));
+      }
+    });
+    return d;
+  }, [rows, colFilters]);
+
   const sorted = useMemo(() => {
-    if(!sortKey||!sortDir) return rows;
-    return [...rows].sort((a,b)=>{
+    if(!sortKey||!sortDir) return filtered;
+    return [...filtered].sort((a,b)=>{
       let av=a[sortKey]??0, bv=b[sortKey]??0;
       if(typeof av==="string") av=av.toLowerCase();
       if(typeof bv==="string") bv=bv.toLowerCase();
@@ -58,12 +155,15 @@ function SortableTable({ cols, rows, emptyMsg }) {
       if(av>bv) return sortDir==="desc"?-1:1;
       return 0;
     });
-  }, [rows,sortKey,sortDir]);
+  }, [filtered,sortKey,sortDir]);
+
   function arrow(key) {
     if(sortKey!==key) return <span style={{color:"#d1d5db",marginLeft:3}}>⇅</span>;
     return <span style={{color:PURPLE,marginLeft:3}}>{sortDir==="desc"?"↓":"↑"}</span>;
   }
+
   if(!rows.length) return <div style={{padding:"40px",textAlign:"center",color:"#9ca3af",fontSize:13}}>{emptyMsg}</div>;
+
   return (
     <div style={{overflowX:"auto", maxWidth:"100%"}}>
       <table style={{width:"100%",borderCollapse:"separate",borderSpacing:0,fontSize:12}}>
@@ -83,7 +183,15 @@ function SortableTable({ cols, rows, emptyMsg }) {
               };
               return (
                 <th key={c.key} onClick={()=>handleSort(c.sortKey||c.key)} style={headerStyle}>
-                  {c.label}{arrow(c.sortKey||c.key)}
+                  {c.label}
+                  {arrow(c.sortKey||c.key)}
+                  {c.filterable && (
+                    <ColFilter
+                      values={rows.map(r => String(r[c.key] ?? ""))}
+                      selected={colFilters[c.key] || []}
+                      onChange={vals => setFilter(c.key, vals)}
+                    />
+                  )}
                 </th>
               );
             })}
@@ -124,10 +232,10 @@ function SortableTable({ cols, rows, emptyMsg }) {
 
 function wowStoreCols() {
   return [
-    { key:"doorCode",  sortKey:"doorCode",     label:"Door",        muted:true, sticky:true, leftOffset:0 },
-    { key:"market",    sortKey:"market",        label:"Market",      muted:true, sticky:true, leftOffset:80 },
-    { key:"storeName", sortKey:"storeName",     label:"Store",       bold:true,  sticky:true, leftOffset:170 },
-    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky:true, leftOffset:330, lastSticky:true },
+    { key:"doorCode",  sortKey:"doorCode",     label:"Door",        muted:true, sticky:true, leftOffset:0,   filterable:true },
+    { key:"market",    sortKey:"market",        label:"Market",      muted:true, sticky:true, leftOffset:80,  filterable:true },
+    { key:"storeName", sortKey:"storeName",     label:"Store",       bold:true,  sticky:true, leftOffset:170, filterable:true },
+    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky:true, leftOffset:330, lastSticky:true, filterable:true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr}      prev={r.ppd_prev}      pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><TrendCell curr={r.acc_curr}      prev={r.acc_prev}      pct={r.acc_pct} format={fmtDollar}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr}    prev={r.voice_prev}    pct={r.voice_pct}/> },
@@ -142,86 +250,54 @@ function wowStoreCols() {
         </div>
       </div>
     )},
-     {
-   key:"retMonthly",
-  sortKey:"ret_monthly",
-  label:"Running Retention",
-  render:r => `${Math.round(r.ret_monthly * 100)}%`
-
-},
-
+    { key:"retMonthly", sortKey:"ret_monthly", label:"Running Retention", render:r => `${Math.round((r.ret_monthly||0) * 100)}%` },
   ];
 }
 
 function wowMarketCols() {
   return [
-    { key:"market",    sortKey:"market",        label:"Market",      bold:true, sticky:true, leftOffset:0 },
+    { key:"market",    sortKey:"market",        label:"Market",      bold:true, sticky:true, leftOffset:0, filterable:true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr}      prev={r.ppd_prev}      pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><TrendCell curr={r.acc_curr}      prev={r.acc_prev}      pct={r.acc_pct} format={fmtDollar}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr}    prev={r.voice_prev}    pct={r.voice_pct}/> },
     { key:"bts",       sortKey:"bts_curr",      label:"BTS",         render:r=><TrendCell curr={r.bts_curr}      prev={r.bts_prev}      pct={r.bts_pct}/> },
     { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><TrendCell curr={r.hint_curr}     prev={r.hint_prev}     pct={r.hint_pct}/> },
     { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} pct={r.upgrades_pct}/> },
-    {
-      key:"retention",
-      sortKey:"ret_curr",
-      label:"Retention",
-      render:r=>(
-        <div>
-          <RetentionBar value={r.ret_curr}/>
-          <div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>
-            PREV: {fmtRetention(r.ret_prev)} <PctBadge value={r.ret_pct}/>
-          </div>
+    { key:"retention", sortKey:"ret_curr",      label:"Retention",   render:r=>(
+      <div>
+        <RetentionBar value={r.ret_curr}/>
+        <div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>
+          PREV: {fmtRetention(r.ret_prev)} <PctBadge value={r.ret_pct}/>
         </div>
-      )
-    },
-     {
-   key:"retMonthly",
-  sortKey:"ret_monthly",
-  label:"Running Retention",
-  render:r => `${Math.round(r.ret_monthly * 100)}%`
-
-},
-
+      </div>
+    )},
+    { key:"retMonthly", sortKey:"ret_monthly", label:"Running Retention", render:r => `${Math.round((r.ret_monthly||0) * 100)}%` },
   ];
 }
 
 function wowDistrictCols() {
   return [
-    { key:"market",    sortKey:"market",        label:"Market",      bold:true,  sticky:true, leftOffset:0 },
-    { key:"mm",        sortKey:"mm",            label:"MM",          muted:true, sticky:true, leftOffset:120 },
-    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky:true, leftOffset:240, lastSticky:true },
+    { key:"market",    sortKey:"market",        label:"Market",      bold:true,  sticky:true, leftOffset:0,   filterable:true },
+    { key:"mm",        sortKey:"mm",            label:"MM",          muted:true, sticky:true, leftOffset:120, filterable:true },
+    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky:true, leftOffset:240, lastSticky:true, filterable:true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr}      prev={r.ppd_prev}      pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Acc",         render:r=><TrendCell curr={r.acc_curr}      prev={r.acc_prev}      pct={r.acc_pct} format={fmtDollar}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr}    prev={r.voice_prev}    pct={r.voice_pct}/> },
     { key:"bts",       sortKey:"bts_curr",      label:"BTS",         render:r=><TrendCell curr={r.bts_curr}      prev={r.bts_prev}      pct={r.bts_pct}/> },
     { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><TrendCell curr={r.hint_curr}     prev={r.hint_prev}     pct={r.hint_pct}/> },
     { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} pct={r.upgrades_pct}/> },
-    {
-      key:"retention",
-      sortKey:"ret_curr",
-      label:"Retention",
-      render:r=>(
-        <div>
-          <RetentionBar value={r.ret_curr}/>
-          <div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>
-            PREV: {fmtRetention(r.ret_prev)} <PctBadge value={r.ret_pct}/>
-          </div>
+    { key:"retention", sortKey:"ret_curr",      label:"Retention",   render:r=>(
+      <div>
+        <RetentionBar value={r.ret_curr}/>
+        <div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>
+          PREV: {fmtRetention(r.ret_prev)} <PctBadge value={r.ret_pct}/>
         </div>
-      )
-    },
-     {
-   key:"retMonthly",
-  sortKey:"ret_monthly",
-  label:"Running Retention",
-  render:r => `${Math.round(r.ret_monthly * 100)}%`
-
-},
-
+      </div>
+    )},
+    { key:"retMonthly", sortKey:"ret_monthly", label:"Running Retention", render:r => `${Math.round((r.ret_monthly||0) * 100)}%` },
   ];
 }
 
-// growth % = (curr - prev) / prev
 function growth(curr, prev) {
   if (!prev) return null;
   return (curr - prev) / prev;
@@ -317,7 +393,6 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
 
       <div style={{padding:"20px 28px"}}>
 
-        {/* STAT CARDS */}
         <div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap"}}>
           <StatCard label="Total PPD"      curr={stats.ppdCurr}      prev={stats.ppdPrev}      trend={stats.ppdTrend}      format={fmtNum}       accent="pink"/>
           <StatCard label="Total ACC"      curr={stats.accCurr}      prev={stats.accPrev}      trend={stats.accTrend}      format={fmtDollar}     accent="purple"/>
@@ -328,7 +403,6 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
           <StatCard label="Avg Retention"  curr={stats.retCurr}      prev={stats.retPrev}      trend={stats.retTrend}      format={fmtRetention}  accent={stats.retTrend>=0?"green":"red"}/>
         </div>
 
-        {/* WIN/LOSE */}
         <div style={{background:"#fff",borderRadius:14,border:"1px solid #e9eaf0",padding:"16px 18px",marginBottom:20}}>
           <div style={{fontWeight:600,color:PURPLE,fontSize:13,marginBottom:12}}>Store Performance vs Last Week</div>
           <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
@@ -345,7 +419,6 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
           </div>
         </div>
 
-        {/* CHART */}
         <div style={{background:"#fff",borderRadius:14,border:"1px solid #e9eaf0",padding:"18px 20px",marginBottom:20}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:8}}>
             <div style={{fontWeight:600,color:PURPLE,fontSize:14}}>Market Comparison — This Week vs Last Week</div>
@@ -369,14 +442,12 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
           </ResponsiveContainer>
         </div>
 
-        {/* TABS */}
         <div style={{background:PURPLE,borderRadius:10,display:"inline-flex",padding:"4px",gap:2,marginBottom:16}}>
           {tabBtn("store","Store Level")}
           {tabBtn("market","Market Wise")}
           {tabBtn("district","District Wise")}
         </div>
 
-        {/* TABLE */}
         <div style={{background:"#fff",borderRadius:14,border:"1px solid #e9eaf0",overflow:"hidden"}}>
           <div style={{padding:"12px 18px",borderBottom:"1px solid #f3f4f6",background:"#faf8ff",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div style={{fontWeight:600,color:PURPLE,fontSize:14}}>
