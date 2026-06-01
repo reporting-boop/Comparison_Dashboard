@@ -66,14 +66,14 @@ export function PctBadge({ value }) {
   );
 }
 
-export function TrendCell({ curr, prev, pct, format }) {
-  const fmt = format || (v => fmtNum(v, 0));
-  const c   = pctColor(pct);
+function TrendCell({ curr, prev, pct, format = fmtNum }) {
   return (
-    <div style={{ lineHeight:1.4 }}>
-      <div style={{ fontWeight:700, color:"#111827", fontSize:13 }}>{fmt(curr)}</div>
-      <div style={{ fontSize:10, color:"#9ca3af" }}>prev: {fmt(prev)}</div>
-      <div style={{ marginTop:2 }}><PctBadge value={pct}/></div>
+    <div style={{ display:"flex", flexDirection:"column", gap:3 }}>
+      <div style={{ fontWeight:600, color:"#111827", fontSize:13 }}>{format(curr)}</div>
+      <div style={{ fontSize:11, color:"#6b7280", fontWeight:400 }}>
+        <span>PREV: {format(prev)}</span>
+      </div>
+      <div style={{ marginTop:1 }}><PctBadge value={pct}/></div>
     </div>
   );
 }
