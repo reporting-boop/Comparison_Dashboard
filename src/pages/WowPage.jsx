@@ -252,7 +252,12 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
     <div>
       <PageHeader
         title="WOW Retention Comparison Report"
-        sub="Previous Week vs Current Week"
+        sub={
+          <span>
+            Previous Week vs Current Week<br/>
+            (17th to 23th May 2026) vs (24th to 30th May 2026)
+          </span>
+        }
         extra={
           <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
             {user.role==="admin"&&<MultiSelect options={allMarkets} selected={markets} onChange={val=>{setMarkets(val);setDms([]);}} placeholder="All Markets"/>}
