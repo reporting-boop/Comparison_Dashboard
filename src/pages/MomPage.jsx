@@ -236,7 +236,7 @@ function SortableTable({ cols, rows, emptyMsg }) {
   }, [filtered, sortKey, sortDir]);
 
   function arrow(key) {
-    if (sortKey !== key) return <span style={{color:"#d1d5db",marginLeft:3}}>⇅</span>;
+    if (sortKey !== key) return <span style={{color:"#9ca3af",marginLeft:3}}>⇅</span>;
     return <span style={{color:PURPLE,marginLeft:3}}>{sortDir==="desc"?"↓":"↑"}</span>;
   }
 
