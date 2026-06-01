@@ -470,7 +470,7 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
         sub={
           <span>
             Previous Month vs Current Month — with trending<br/>
-            (1st April to 30th April 2026) vs (1st May to 30th May 2026)
+            (1st April to 30th April 2026) vs (1st May to 31st May 2026)
           </span>
         }
         extra={
