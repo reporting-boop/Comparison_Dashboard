@@ -186,12 +186,12 @@ function SortableTable({ cols, rows, emptyMsg }) {
                   {c.label}
                   {arrow(c.sortKey||c.key)}
                   {c.filterable && (
-                    <ColFilter
-                      values={rows.map(r => String(r[c.key] ?? ""))}
-                      selected={colFilters[c.key] || []}
-                      onChange={vals => setFilter(c.key, vals)}
-                    />
-                  )}
+  <ColFilter
+    values={filtered.map(r => String(r[c.key] ?? ""))}
+    selected={colFilters[c.key] || []}
+    onChange={vals => setFilter(c.key, vals)}
+  />
+)}
                 </th>
               );
             })}
