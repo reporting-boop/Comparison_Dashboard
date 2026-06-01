@@ -148,7 +148,6 @@ function wowStoreCols() {
 function wowMarketCols() {
   return [
     { key:"market",    sortKey:"market",        label:"Market",      bold:true,  sticky:true, leftOffset:0 },
-    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky:true, leftOffset:120, lastSticky:true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr}      prev={r.ppd_prev}      pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><TrendCell curr={r.acc_curr}      prev={r.acc_prev}      pct={r.acc_pct} format={fmtDollar}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr}    prev={r.voice_prev}    pct={r.voice_pct}/> },
