@@ -181,7 +181,6 @@ function momStoreCols() {
 function momMarketCols() {
   return [
     { key:"market",    sortKey:"market",        label:"Market",      bold:true,  sticky:true, leftOffset:0 },
-    { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky:true, leftOffset:120, lastSticky:true },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><CustomTrendCell curr={r.ppd_curr} prev={r.ppd_prev} mtd={r.ppd_mtd} pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><CustomTrendCell curr={r.acc_curr} prev={r.acc_prev} mtd={r.acc_mtd} pct={r.acc_pct} format={fmtDollar}/> },
     { key:"apo",       sortKey:"apo_curr",      label:"APO",         render:r=><CustomTrendCell curr={r.apo_curr} prev={r.apo_prev} pct={r.apo_pct} format={fmtApo}/> },
