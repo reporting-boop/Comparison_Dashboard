@@ -147,14 +147,26 @@ function wowStoreCols() {
 
 function wowMarketCols() {
   return [
-    { key:"market",    sortKey:"market",        label:"Market",      bold:true,  sticky:true, leftOffset:0 },
+    { key:"market",    sortKey:"market",        label:"Market",      bold:true, sticky:true, leftOffset:0 },
     { key:"ppd",       sortKey:"ppd_curr",      label:"PPD",         render:r=><TrendCell curr={r.ppd_curr}      prev={r.ppd_prev}      pct={r.ppd_pct}/> },
     { key:"acc",       sortKey:"acc_curr",      label:"Accessories", render:r=><TrendCell curr={r.acc_curr}      prev={r.acc_prev}      pct={r.acc_pct} format={fmtDollar}/> },
     { key:"voice",     sortKey:"voice_curr",    label:"Voice",       render:r=><TrendCell curr={r.voice_curr}    prev={r.voice_prev}    pct={r.voice_pct}/> },
     { key:"bts",       sortKey:"bts_curr",      label:"BTS",         render:r=><TrendCell curr={r.bts_curr}      prev={r.bts_prev}      pct={r.bts_pct}/> },
     { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><TrendCell curr={r.hint_curr}     prev={r.hint_prev}     pct={r.hint_pct}/> },
     { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} pct={r.upgrades_pct}/> },
-    { key:"retention", sortKey:"ret_curr",      label:"Retention",   render:r=><div><RetentionBar value={r.ret_curr}/></div> },
+    {
+      key:"retention",
+      sortKey:"ret_curr",
+      label:"Retention",
+      render:r=>(
+        <div>
+          <RetentionBar value={r.ret_curr}/>
+          <div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>
+            PREV: {fmtRetention(r.ret_prev)} <PctBadge value={r.ret_pct}/>
+          </div>
+        </div>
+      )
+    },
   ];
 }
 
@@ -169,7 +181,19 @@ function wowDistrictCols() {
     { key:"bts",       sortKey:"bts_curr",      label:"BTS",         render:r=><TrendCell curr={r.bts_curr}      prev={r.bts_prev}      pct={r.bts_pct}/> },
     { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><TrendCell curr={r.hint_curr}     prev={r.hint_prev}     pct={r.hint_pct}/> },
     { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} pct={r.upgrades_pct}/> },
-    { key:"retention", sortKey:"ret_curr",      label:"Retention",   render:r=><div><RetentionBar value={r.ret_curr}/></div> },
+    {
+      key:"retention",
+      sortKey:"ret_curr",
+      label:"Retention",
+      render:r=>(
+        <div>
+          <RetentionBar value={r.ret_curr}/>
+          <div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>
+            PREV: {fmtRetention(r.ret_prev)} <PctBadge value={r.ret_pct}/>
+          </div>
+        </div>
+      )
+    },
   ];
 }
 
