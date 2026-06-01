@@ -175,6 +175,13 @@ function momStoreCols() {
         <div style={{ marginTop:1 }}><PctBadge value={r.ret_pct}/></div>
       </div>
     )},
+
+    {
+  key:"retMonthly",
+  sortKey:"ret_monthly",
+  label:"Retention Monthly",
+  render:r=><div>{fmtRetention(r.ret_monthly)}</div>
+},
   ];
 }
 
