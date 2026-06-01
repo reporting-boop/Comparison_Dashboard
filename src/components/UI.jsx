@@ -72,7 +72,7 @@ export function TrendCell({ curr, prev, pct, format }) {
   return (
     <div style={{ lineHeight:1.4 }}>
       <div style={{ fontWeight:700, color:"#111827", fontSize:13 }}>{fmt(curr)}</div>
-      <div style={{ fontSize:10, color:"#9ca3af" }}>PREV: {fmt(PREV)}</div>
+      <div style={{ fontSize:10, color:"#9ca3af" }}>prev: {fmt(prev)}</div>
       <div style={{ marginTop:2 }}><PctBadge value={pct}/></div>
     </div>
   );
