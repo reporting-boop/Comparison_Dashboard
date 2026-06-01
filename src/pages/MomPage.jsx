@@ -179,7 +179,7 @@ function momStoreCols() {
     {
    key:"retMonthly",
   sortKey:"ret_monthly",
-  label:"Reten_Monthly",
+  label:"Running Retention",
   render:r => `${Math.round(r.ret_monthly * 100)}%`
 
 },
@@ -207,7 +207,7 @@ function momMarketCols() {
    {
    key:"retMonthly",
   sortKey:"ret_monthly",
-  label:"Reten_Monthly",
+  label:"Running Retention",
   render:r => `${Math.round(r.ret_monthly * 100)}%`
 
 },
@@ -236,7 +236,7 @@ function momDistrictCols() {
  {
    key:"retMonthly",
   sortKey:"ret_monthly",
-  label:"Reten_Monthly",
+  label:"Running Retention",
   render:r => `${Math.round(r.ret_monthly * 100)}%`
 
 },
