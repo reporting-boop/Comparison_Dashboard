@@ -142,6 +142,14 @@ function wowStoreCols() {
         </div>
       </div>
     )},
+     {
+   key:"retMonthly",
+  sortKey:"ret_monthly",
+  label:"Running Retention",
+  render:r => `${Math.round(r.ret_monthly * 100)}%`
+
+},
+
   ];
 }
 
@@ -167,6 +175,14 @@ function wowMarketCols() {
         </div>
       )
     },
+     {
+   key:"retMonthly",
+  sortKey:"ret_monthly",
+  label:"Running Retention",
+  render:r => `${Math.round(r.ret_monthly * 100)}%`
+
+},
+
   ];
 }
 
@@ -194,6 +210,14 @@ function wowDistrictCols() {
         </div>
       )
     },
+     {
+   key:"retMonthly",
+  sortKey:"ret_monthly",
+  label:"Running Retention",
+  render:r => `${Math.round(r.ret_monthly * 100)}%`
+
+},
+
   ];
 }
 
