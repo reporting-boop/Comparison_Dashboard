@@ -257,14 +257,13 @@ function SortableTable({ cols, rows, emptyMsg }) {
                 ...(c.sticky && { position:"sticky", left:c.leftOffset||0, boxShadow: c.lastSticky ? "4px 0 8px -4px rgba(0,0,0,0.12)" : "none" })
               }}>
                 {c.label}
-                {arrow(c.sortKey||c.key)}
                 {c.filterable && (
-                  <ColFilter
-                    values={rows.map(r => String(r[c.key] ?? ""))}
-                    selected={colFilters[c.key] || []}
-                    onChange={vals => setFilter(c.key, vals)}
-                  />
-                )}
+  <ColFilter
+    values={filtered.map(r => String(r[c.key] ?? ""))}
+    selected={colFilters[c.key] || []}
+    onChange={vals => setFilter(c.key, vals)}
+  />
+)}
               </th>
             ))}
           </tr>
