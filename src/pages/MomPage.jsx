@@ -157,6 +157,7 @@ const fmtApo = v => `$${(+v||0).toFixed(1)}`;
 
 function momStoreCols() {
   return [
+    { key:"doorCode",  sortKey:"doorCode",     label:"Door",        muted:true, sticky:true, leftOffset:0 },
     { key:"market",    sortKey:"market",        label:"Market",      muted:true, sticky:true, leftOffset:80 },
     { key:"storeName", sortKey:"storeName",     label:"Store",       bold:true,  sticky:true, leftOffset:170 },
     { key:"dm",        sortKey:"dm",            label:"DM",          muted:true, sticky:true, leftOffset:330, lastSticky:true },
