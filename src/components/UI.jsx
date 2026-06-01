@@ -28,7 +28,7 @@ export function StatCard({ label, curr, prev, trend, format, accent }) {
       </div>
       {prev != null && (
         <div style={{ fontSize:11, color:"#9ca3af", marginBottom:2 }}>
-          prev: {format ? format(prev) : prev}
+          PREV: {format ? format(prev) : prev}
         </div>
       )}
       {trendVal && (
@@ -38,7 +38,9 @@ export function StatCard({ label, curr, prev, trend, format, accent }) {
       )}
     </div>
   );
-}export function PageHeader({ title, sub, extra }) {
+}
+
+export function PageHeader({ title, sub, extra }) {
   return (
     <div style={{
       background:`linear-gradient(135deg,${PURPLE},#7c3aed)`,
@@ -66,7 +68,7 @@ export function PctBadge({ value }) {
   );
 }
 
-function TrendCell({ curr, prev, pct, format = fmtNum }) {
+export function TrendCell({ curr, prev, pct, format = fmtNum }) {
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:3 }}>
       <div style={{ fontWeight:600, color:"#111827", fontSize:13 }}>{format(curr)}</div>
@@ -108,7 +110,6 @@ export function RetentionBar({ value }) {
   );
 }
 
-// Generic scrollable data table
 export function DataTable({ cols, rows, emptyMsg="No data" }) {
   if (!rows || !rows.length) return (
     <div style={{ textAlign:"center", padding:48, color:"#9ca3af", fontSize:14 }}>{emptyMsg}</div>
@@ -150,7 +151,6 @@ export function DataTable({ cols, rows, emptyMsg="No data" }) {
   );
 }
 
-// Reusable filter bar
 export function FilterBar({ markets, market, setMarket, dms, dm, setDm, search, setSearch }) {
   const sel = {
     padding:"7px 10px", borderRadius:8, border:"1px solid rgba(255,255,255,.2)",
@@ -183,7 +183,6 @@ export function FilterBar({ markets, market, setMarket, dms, dm, setDm, search, 
   );
 }
 
-// Compact metric group header
 export function MetricGroupHeader({ metrics }) {
   return (
     <div style={{ display:"flex", gap:6, flexWrap:"wrap", padding:"12px 18px 0" }}>
@@ -197,7 +196,6 @@ export function MetricGroupHeader({ metrics }) {
   );
 }
 
-// Legacy compat
 export function Table({ cols, rows, emptyMsg }) { return <DataTable cols={cols} rows={rows} emptyMsg={emptyMsg}/>; }
 export function Badge() { return null; }
 export function ProgressBar() { return null; }
