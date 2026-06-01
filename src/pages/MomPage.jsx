@@ -179,7 +179,7 @@ function momStoreCols() {
     {
    key:"retMonthly",
   sortKey:"ret_monthly",
-  label:"Retention Monthly",
+  label:"Reten_Monthly",
   render:r => `${Math.round(r.ret_monthly * 100)}%`
 
 },
@@ -203,6 +203,14 @@ function momMarketCols() {
         <div style={{ marginTop:1 }}><PctBadge value={r.ret_pct}/></div>
       </div>
     )},
+  
+   {
+   key:"retMonthly",
+  sortKey:"ret_monthly",
+  label:"Reten_Monthly",
+  render:r => `${Math.round(r.ret_monthly * 100)}%`
+
+},
   ];
 }
 
@@ -225,6 +233,14 @@ function momDistrictCols() {
         <div style={{ marginTop:1 }}><PctBadge value={r.ret_pct}/></div>
       </div>
     )},
+ {
+   key:"retMonthly",
+  sortKey:"ret_monthly",
+  label:"Reten_Monthly",
+  render:r => `${Math.round(r.ret_monthly * 100)}%`
+
+},
+
   ];
 }
 
