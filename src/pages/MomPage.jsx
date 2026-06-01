@@ -321,18 +321,23 @@ export default function MomPage({ storeData, marketData, districtData, user }) {
   return (
     <div>
       <PageHeader
-        title="MOM Retention Comparison Report"
-        sub="Previous Month vs Current Month — with trending"
-        extra={
-          <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
-            {user.role==="admin" && (
-              <MultiSelect options={allMarkets} selected={markets} onChange={val=>{setMarkets(val);setDms([]);}} placeholder="All Markets"/>
-            )}
-            <MultiSelect options={allDms} selected={dms} onChange={setDms} placeholder="All DMs"/>
-            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search store…" style={{...filterSelect,width:160,outline:"none"}}/>
-          </div>
-        }
-      />
+  title="MOM Retention Comparison Report"
+  sub={
+    <span>
+      Previous Month vs Current Month — with trending<br/>
+      (1st April to 30th April 2026) vs (1st May to 30th May 2026)
+    </span>
+  }
+  extra={
+    <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
+      {user.role==="admin" && (
+        <MultiSelect options={allMarkets} selected={markets} onChange={val=>{setMarkets(val);setDms([]);}} placeholder="All Markets"/>
+      )}
+      <MultiSelect options={allDms} selected={dms} onChange={setDms} placeholder="All DMs"/>
+      <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search store…" style={{...filterSelect,width:160,outline:"none"}}/>
+    </div>
+  }
+/>
 
       <div style={{padding:"20px 28px"}}>
 
