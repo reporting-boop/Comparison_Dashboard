@@ -15,8 +15,8 @@ function CustomTrendCell({ curr, prev, mtd, pct, format = fmtNum }) {
     <div style={{ display:"flex", flexDirection:"column", gap:3 }}>
       <div style={{ fontWeight:600, color:"#111827", fontSize:13 }}>{format(curr)}</div>
       <div style={{ fontSize:11, color:"#6b7280", fontWeight:400 }}>
-        <span>prev: {format(prev)}</span>
-        {mtd !== undefined && mtd !== null && <span> | mtd: {format(mtd)}</span>}
+        <span>PREV: {format(prev)}</span>
+        {mtd !== undefined && mtd !== null && <span> | MTD: {format(mtd)}</span>}
       </div>
       <div style={{ marginTop:1 }}><PctBadge value={pct}/></div>
     </div>
