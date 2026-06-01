@@ -135,7 +135,7 @@ function wowStoreCols() {
     { key:"hint",      sortKey:"hint_curr",     label:"Hint",        render:r=><TrendCell curr={r.hint_curr}     prev={r.hint_prev}     pct={r.hint_pct}/> },
     { key:"upgrades",  sortKey:"upgrades_curr", label:"Upgrades",    render:r=><TrendCell curr={r.upgrades_curr} prev={r.upgrades_prev} pct={r.upgrades_pct}/> },
     { key:"retention", sortKey:"ret_curr",      label:"Retention",   render:r=>(
-      <div><RetentionBar value={r.ret_curr}/><div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>PREV: {fmtRetention(r.ret_prev)} <PctBadge value={r.ret_pct}/></div></div>
+      <div><RetentionBar value={r.ret_curr}/><div style={{fontSize:10,color:"#9ca3af",marginTop:2}}>Prev: {fmtRetention(r.ret_prev)} <PctBadge value={r.ret_pct}/></div></div>
     )},
   ];
 }
