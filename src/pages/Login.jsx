@@ -60,7 +60,7 @@ export default function Login({ onLogin }) {
           </label>
           <input
             value={username} onChange={e => setUsername(e.target.value)}
-            placeholder="e.g. admin, dallas"
+            placeholder="Enter username"
             style={{
               width:"100%", padding:"12px 14px", borderRadius:10, boxSizing:"border-box",
               border:"1px solid rgba(255,255,255,.12)",
@@ -108,31 +108,7 @@ export default function Login({ onLogin }) {
             <span style={{ fontSize:16 }}>→</span> Sign in
           </button>
         </form>
-
-        {/* Demo credentials */}
-        <div style={{
-          marginTop:22, background:"rgba(255,255,255,.06)", borderRadius:12,
-          padding:"14px 16px", border:"1px solid rgba(255,255,255,.08)"
-        }}>
-          <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,.35)",
-            letterSpacing:".1em", textTransform:"uppercase", marginBottom:10 }}>
-            Demo Credentials
-          </div>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"5px 12px" }}>
-            {[
-              ["admin","admin123"],["arizona","arz2024"],
-              ["dallas","dal2024"],["houston","hou2024"],
-            ].map(([u,p]) => (
-              <div key={u} style={{ fontSize:11, color:"rgba(255,255,255,.5)", fontFamily:"monospace" }}>
-                <span style={{ color:"rgba(255,255,255,.75)", fontWeight:600 }}>{u}</span>
-                <span style={{ color:"rgba(255,255,255,.3)" }}> / </span>{p}
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
 }
-
-       
