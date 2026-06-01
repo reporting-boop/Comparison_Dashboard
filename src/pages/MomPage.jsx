@@ -180,7 +180,7 @@ function momStoreCols() {
   key:"retMonthly",
   sortKey:"ret_monthly",
   label:"Reten_Monthly",
-  render:r=><div>{fmtRetention(r.ret_monthly)}</div>
+  render:r => Math.round(r.ret_monthly)
 },
   ];
 }
