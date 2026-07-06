@@ -379,7 +379,7 @@ export default function WowPage({ storeData, marketData, districtData, user }) {
         sub={
           <span>
             Previous Week vs Current Week<br/>
-            (31st May to 06th June 2026) vs (07th June to 13th June 2026)
+            (21th June to 27th June 2026) vs CURRENT WEEK. (28th June to 04th July 2026)
           </span>
         }
         extra={
